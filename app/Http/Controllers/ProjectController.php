@@ -8,6 +8,29 @@ use App\Models\Project;
 
 class ProjectController extends Controller
 {
+    public function index()
+    {
+        $projects = Project::all();
+
+        return ApiResponse::success('Projects list', [
+            'projects' => $projects
+        ]);
+    }
+
+    public function show($id)
+    {
+        $project = Project::query()->find($id);
+
+        if (!$project)
+        {
+            return ApiResponse::error('Project not found', null, 404);
+        }
+
+        return ApiResponse::success('Project', [
+            'project' => $project
+        ]);
+    }
+
     public function store(StoreRequest $request)
     {
         $storeData = $request->validated();

@@ -55,21 +55,11 @@ class User extends Authenticatable
     }
 
     /**
-     * @return HasOne
-     *
-     * Get the company of the owner
-     */
-    public function сompany(): HasOne
-    {
-        return $this->hasOne(Company::class);
-    }
-
-    /**
      * @return BelongsToMany
      *
-     * Get the company of the user
+     * Get the companies of the user
      */
-    public function company(): BelongsToMany
+    public function companies(): BelongsToMany
     {
         return $this->belongsToMany(Company::class, 'company_user', 'company_id', 'user_id')
             ->withTimestamps();
