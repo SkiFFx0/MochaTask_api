@@ -14,13 +14,13 @@ Route::middleware('auth:sanctum')->group(function ()
 {
     Route::post("/logout", [AuthController::class, 'logout']);
 
-    Route::group(['prefix' => 'users'], function ()
+    Route::prefix('users')->group(function ()
     {
         Route::get("/", [UserController::class, 'index']);
         Route::get("/{user}", [UserController::class, 'show']);
     });
 
-    Route::group(['prefix' => 'companies'], function ()
+    Route::prefix('companies')->group(function ()
     {
         Route::get("/", [CompanyController::class, 'index']);
         Route::get("/{company}", [CompanyController::class, 'show']);
@@ -28,18 +28,20 @@ Route::middleware('auth:sanctum')->group(function ()
 
         Route::middleware(['company.member'])->group(function ()
         {
-            Route::patch("/{company}", [CompanyController::class, 'update']);
-            Route::delete("/{company}", [CompanyController::class, 'destroy']);
-
-            Route::group(['prefix' => '{company}'], function ()
+            Route::prefix('{company}')->group(function ()
             {
-                Route::post("/add-user", [CompanyController::class, 'addUser']);
-                Route::post("/remove-user", [CompanyController::class, 'removeUser']);
-            })->middleware("can:manage,company");
+                Route::patch("/", [CompanyController::class, 'update']);
+                Route::delete("/", [CompanyController::class, 'destroy']);
+
+                Route::prefix('/members')->group(function () {
+                    Route::post("/", [CompanyController::class, 'addUserWithRole']);
+                    Route::delete("/{user}", [CompanyController::class, 'removeUser']);
+                })->middleware("can:manage,company");
+            });
         });
     });
 
-    Route::group(['prefix' => 'projects'], function ()
+    Route::prefix('projects')->group(function ()
     {
         Route::middleware(['company.member'])->group(function ()
         {
@@ -48,15 +50,6 @@ Route::middleware('auth:sanctum')->group(function ()
             Route::post("/", [ProjectController::class, 'store']);
             Route::patch("/{project}", [ProjectController::class, 'update']);
             Route::delete("/{project}", [ProjectController::class, 'destroy']);
-        });
-    });
-
-    Route::group(['prefix' => 'members'], function ()
-    {
-        Route::middleware(['company.member'])->group(function ()
-        {
-            Route::post("/", [MemberController::class, 'store']);
-            Route::delete("/{member}", [MemberController::class, 'destroy']);
         });
     });
 });

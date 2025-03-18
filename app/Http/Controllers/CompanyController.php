@@ -45,10 +45,11 @@ class CompanyController extends Controller
         $storeData = $request->validated();
 
         $company = Company::query()->create($storeData);
+        $user = auth()->user();
 
         CompanyUser::query()->create([
             'company_id' => $company->id,
-            'user_id' => auth()->user()->id,
+            'user_id' => $user->id,
             'role' => 'owner'
         ]);
 
@@ -79,17 +80,24 @@ class CompanyController extends Controller
         return ApiResponse::success('Company deleted successfully');
     }
 
-    public function addUser(AddUserRequest $request, Company $company)
+    public function addUserWithRole(AddUserRequest $request, Company $company)
     {
         $request->validated();
 
         $role = CompanyRole::from($request->role); // Convert string to Enum
 
         // Assign user to a company
-        CompanyUser::assignUserToCompany($company->id, $request->user_id, $role);
+        CompanyUser::assignUserToCompanyAndAddRole($company->id, $request->user_id, $role);
 
         return ApiResponse::success('User added successfully', [
             'company' => $company
         ]);
+    }
+
+    public function removeUser(Company $company, User $user)
+    {
+        CompanyUser::removeUserFromCompany($company, $user);
+
+        return ApiResponse::success('User deleted successfully');
     }
 }

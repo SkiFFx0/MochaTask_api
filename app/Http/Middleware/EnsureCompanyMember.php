@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Company;
 use App\Models\CompanyUser;
 use Closure;
 use Illuminate\Http\Request;
@@ -17,7 +18,8 @@ class EnsureCompanyMember
     public function handle(Request $request, Closure $next): Response
     {
         $user = auth()->user();
-        $company = $request->route('company');
+
+        $company = $request->company;
 
         $companyUser = CompanyUser::query()
             ->where('company_id', $company->id)
@@ -28,6 +30,8 @@ class EnsureCompanyMember
         {
             return response()->json(['error' => 'Unauthorized. You are not part of this company.'], 403);
         }
+
+
 
         $request->attributes->set('companyRole', $companyUser->role);
 

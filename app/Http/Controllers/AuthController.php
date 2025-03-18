@@ -26,6 +26,7 @@ class AuthController extends Controller
         $loginUserData = $request->validated();
 
         $user = User::query()->where('email', $loginUserData['email'])->first();
+
         if (!$user || !Hash::check($loginUserData['password'], $user->password))
         {
             return ApiResponse::error('Invalid login credentials', null, 401);

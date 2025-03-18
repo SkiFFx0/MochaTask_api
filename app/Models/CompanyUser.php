@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\CompanyRole;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CompanyUser extends Model
 {
@@ -18,20 +19,21 @@ class CompanyUser extends Model
     protected $casts = [
         'role' => CompanyRole::class, // Auto-converts role to Enum
     ];
+    //TODO Add inability to remove owner
 
-    protected static function assignUserToCompany($companyId, $userId, CompanyRole $role)
+    protected static function assignUserToCompanyAndAddRole($companyId, $userId, CompanyRole $role)
     {
-        $existingOwnerCount = self::where('company_id', $companyId)
-            ->where('role', CompanyRole::OWNER)
-            ->count();
-
-        if ($existingOwnerCount === 1 && $role !== CompanyRole::OWNER) {
-            return response()->json(['error' => 'Cannot remove the last owner'], 403);
-        }
-
-        return self::updateOrCreate(
+        return self::create(
             ['company_id' => $companyId, 'user_id' => $userId],
             ['role' => $role]
         );
+    }
+
+    protected static function removeUserFromCompany($companyId, $userId)
+    {
+        return self::query()
+            ->where('company_id', $companyId->id)
+            ->where('user_id', $userId->id)
+            ->delete();
     }
 }
