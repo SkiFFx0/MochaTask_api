@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Enums\CompanyRole;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CompanyUser extends Model
 {
@@ -19,14 +18,15 @@ class CompanyUser extends Model
     protected $casts = [
         'role' => CompanyRole::class, // Auto-converts role to Enum
     ];
-    //TODO Add inability to remove owner
 
+    //TODO Add inability to remove owner
     protected static function assignUserToCompanyAndAddRole($companyId, $userId, CompanyRole $role)
     {
-        return self::create(
-            ['company_id' => $companyId, 'user_id' => $userId],
-            ['role' => $role]
-        );
+        return self::create([
+            'company_id' => $companyId,
+            'user_id' => $userId,
+            'role' => $role
+        ]);
     }
 
     protected static function removeUserFromCompany($companyId, $userId)

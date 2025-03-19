@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\MemberController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -33,12 +34,22 @@ Route::middleware('auth:sanctum')->group(function ()
                 Route::patch("/", [CompanyController::class, 'update']);
                 Route::delete("/", [CompanyController::class, 'destroy']);
 
-                Route::prefix('/members')->group(function () {
+                Route::prefix('/members')->group(function ()
+                {
                     Route::post("/", [CompanyController::class, 'addUserWithRole']);
                     Route::delete("/{user}", [CompanyController::class, 'removeUser']);
                 })->middleware("can:manage,company");
             });
+
+            Route::post("/{id}/", [CompanyController::class, 'send']);
         });
+    });
+
+    Route::prefix('invitations')->group(function ()
+    {
+        Route::post('/invitation-create', [InvitationController::class, 'create'])->middleware("can:create,company");
+        Route::post('/invitation-accept/{token}', [InvitationController::class, 'accept']);
+        Route::post('/invitation-decline/{token}', [InvitationController::class, 'decline']);
     });
 
     Route::prefix('projects')->group(function ()

@@ -80,24 +80,24 @@ class CompanyController extends Controller
         return ApiResponse::success('Company deleted successfully');
     }
 
-    public function addUserWithRole(AddUserRequest $request, Company $company)
-    {
-        $request->validated();
-
-        $role = CompanyRole::from($request->role); // Convert string to Enum
-
-        // Assign user to a company
-        CompanyUser::assignUserToCompanyAndAddRole($company->id, $request->user_id, $role);
-
-        return ApiResponse::success('User added successfully', [
-            'company' => $company
-        ]);
-    }
-
-    public function removeUser(Company $company, User $user)
-    {
-        CompanyUser::removeUserFromCompany($company, $user);
-
-        return ApiResponse::success('User deleted successfully');
-    }
+//    public function addUserWithRole(AddUserRequest $request, Company $company)
+//    {
+//        $request->validated();
+//
+//        $role = CompanyRole::from($request->role); // Convert string to Enum
+//
+//        // Assign user to a company
+//        CompanyUser::assignUserToCompanyAndAddRole($company->id, $request->user_id, $role);
+//
+//        return ApiResponse::success('User added successfully', [
+//            'company' => $company
+//        ]);
+//    }
+//
+//    public function removeUser(Company $company, User $user)
+//    {
+//        CompanyUser::removeUserFromCompany($company, $user);
+//
+//        return ApiResponse::success('User deleted successfully');
+//    }
 }
