@@ -4,6 +4,7 @@ namespace App\Http\Requests\Invitation;
 
 use App\Enums\CompanyRole;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class CreateRequest extends FormRequest
 {
@@ -24,7 +25,7 @@ class CreateRequest extends FormRequest
     {
         return [
             'company_id' => ["required", "exists:companies,id"],
-            'role' => ["required"], //TODO Add all existing roles from Enum or figure out how to cast them here
+            'role' => ["required", Rule::in(CompanyRole::cases())],
         ];
     }
 }

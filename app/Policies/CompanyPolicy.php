@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\Company;
 use App\Models\User;
+use Dflydev\DotAccessData\Data;
 use Illuminate\Auth\Access\Response;
 
 class CompanyPolicy
@@ -64,8 +65,9 @@ class CompanyPolicy
         return false;
     }
 
-    public function manage(User $user, Company $company): bool
+    public function manage(User $user): bool
     {
+        //TODO Figure out how this shit works
         $companyRole = request()->attributes->get('companyRole'); // Get role from middleware
 
         return $companyRole->isPrivileged(); // OWNER & ADMIN can manage company

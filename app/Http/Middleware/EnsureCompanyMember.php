@@ -17,21 +17,18 @@ class EnsureCompanyMember
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $user = auth()->user();
-
-        $company = $request->company;
+        $userId = auth()->user()->id;
+        $companyId = $request->company_id;
 
         $companyUser = CompanyUser::query()
-            ->where('company_id', $company->id)
-            ->where('user_id', $user->id)
+            ->where('company_id', $companyId)
+            ->where('user_id', $userId)
             ->first();
 
         if (!$companyUser)
         {
             return response()->json(['error' => 'Unauthorized. You are not part of this company.'], 403);
         }
-
-
 
         $request->attributes->set('companyRole', $companyUser->role);
 

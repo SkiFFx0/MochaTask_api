@@ -5,16 +5,60 @@ namespace App\Http\Controllers;
 use App\Enums\CompanyRole;
 use App\Http\Requests\Invitation\CreateRequest;
 use App\Models\ApiResponse;
+use App\Models\Company;
 use App\Models\CompanyUser;
-use App\Models\Invitation;
-use App\Models\User;
-use GuzzleHttp\Promise\Create;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\URL;
 
 class InvitationController extends Controller
 {
-    public function create(CreateRequest $request)
-    {;
+    public function generateInviteLink($companyId, $role)
+    {
+        if (!Company::where('id', $companyId)->exists() || !CompanyRole::tryFrom($role))
+        {
+            return ApiResponse::error('Either company or company role doesn\'t exist');
+        }
+
+        $link = URL::temporarySignedRoute(
+            'invitation.accept',
+            now()->addHour(),
+            ['company_id' => $companyId, 'role' => $role]
+        );
+
+        return ApiResponse::success('Invitation created', [
+            'link' => $link
+        ]);
+    }
+
+    public function acceptInviteLink(Request $request)
+    {
+        if (!$request->hasValidSignature())
+        {
+            return ApiResponse::error('Invalid or expired invite link.');
+        }
+
+        $companyId = $request->query('company_id');
+        $role = $request->query('role');
+        $userId = auth()->user()->id;
+
+        if (CompanyUser::query()->where('company_id', $companyId)->where('user_id', $userId)->exists())
+        {
+            return ApiResponse::error('You are already part of this company.');
+        }
+
+        // Adding user to a company
+        CompanyUser::create([
+            'company_id' => $companyId,
+            'user_id' => $userId,
+            'role' => $role
+        ]);
+
+        return ApiResponse::success('Invitation accepted');
+    }
+
+    public function generateInviteToken(CreateRequest $request)
+    {
         $request->validated();
 
         $token = Crypt::encryptString(json_encode($request->all()));
@@ -24,7 +68,7 @@ class InvitationController extends Controller
         ]);
     }
 
-    public function accept($token)
+    public function acceptInviteToken($token)
     {
         $tokenData = json_decode(Crypt::decryptString($token));
         $companyId = $tokenData->company_id;
@@ -39,7 +83,7 @@ class InvitationController extends Controller
         ]);
     }
 
-    public function decline($token)
+    public function declineInviteToken($token)
     {
         return ApiResponse::error('Unfinished function');
     }

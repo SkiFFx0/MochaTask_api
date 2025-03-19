@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Admin\MemberController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\InvitationController;
@@ -36,7 +35,7 @@ Route::middleware('auth:sanctum')->group(function ()
 
                 Route::prefix('/members')->group(function ()
                 {
-                    Route::post("/", [CompanyController::class, 'addUserWithRole']);
+                    Route::post("/", [CompanyController::class, 'editUserRole']);
                     Route::delete("/{user}", [CompanyController::class, 'removeUser']);
                 })->middleware("can:manage,company");
             });
@@ -45,11 +44,19 @@ Route::middleware('auth:sanctum')->group(function ()
         });
     });
 
+
     Route::prefix('invitations')->group(function ()
     {
-        Route::post('/invitation-create', [InvitationController::class, 'create'])->middleware("can:create,company");
-        Route::post('/invitation-accept/{token}', [InvitationController::class, 'accept']);
-        Route::post('/invitation-decline/{token}', [InvitationController::class, 'decline']);
+        Route::middleware("company.member")->group(function ()
+        {
+            Route::post('/invitation-create/{company_id}/{role}', [InvitationController::class, 'generateInviteLink'])
+            ->middleware("can:manage,company");
+            Route::post('/invitation-create', [InvitationController::class, 'generateInviteToken']);
+        });
+
+        Route::get('/invitation-accept/', [InvitationController::class, 'acceptInviteLink'])
+            ->name('invitation.accept');
+        Route::post('/invitation-accept/{token}', [InvitationController::class, 'acceptInviteToken']);
     });
 
     Route::prefix('projects')->group(function ()
