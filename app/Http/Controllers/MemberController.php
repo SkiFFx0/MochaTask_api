@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\CompanyRole;
+use App\Enums\ProjectRole;
 use App\Http\Requests\Company\AddRoleRequest;
 use App\Http\Requests\Company\AddUserRequest;
 use App\Models\ApiResponse;
@@ -17,7 +18,11 @@ class MemberController extends Controller
         $request->validated();
 
         $companyId = $company->id;
-        $userId = $request->user_id;
+
+        $user = auth()->user();
+        $userId = $user->id;
+
+        $role = CompanyRole::MEMBER;
 
         if (CompanyUser::query()
             ->where('company_id', $companyId)
@@ -28,7 +33,7 @@ class MemberController extends Controller
         }
 
         // Assign user to a company
-        CompanyUser::setCompanyUserRole($companyId, $userId, CompanyRole::MEMBER);
+        CompanyUser::setCompanyUserRole($companyId, $userId, $role);
 
         return ApiResponse::success('User added successfully', [
             'company' => $company

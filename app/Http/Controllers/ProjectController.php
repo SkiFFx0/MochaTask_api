@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ProjectRole;
 use App\Http\Requests\Project\StoreRequest;
 use App\Models\ApiResponse;
 use App\Models\Company;
 use App\Models\Project;
+use App\Models\ProjectUser;
+use App\Models\Role;
+use DB;
 
 class ProjectController extends Controller
 {
@@ -13,7 +17,21 @@ class ProjectController extends Controller
     {
         $storeData = $request->validated();
 
-        $project = Project::query()->create($storeData);
+        $companyId = $company->id;
+
+        $project = Project::query()->create([
+            'name' => $storeData['name'],
+            'company_id' => $companyId,
+        ]);
+        $projectId = $project->id;
+
+        $user = auth()->user();
+        $userId = $user->id;
+
+        $role = Role::query()->where('id', 1)->firstOrFail();
+
+        // Assign creator as owner
+        ProjectUser::setProjectUserRole($projectId, $userId, $role);
 
         return ApiResponse::success('Project created successfully', [
             'project' => $project

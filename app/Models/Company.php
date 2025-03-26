@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Company extends Model
@@ -19,11 +20,21 @@ class Company extends Model
     /**
      * @return BelongsToMany
      *
-     * Get the user of the company
+     * Get the users of the company
      */
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'company_user', 'user_id', 'company_id')
             ->withTimestamps();
+    }
+
+    /**
+     * @return HasMany
+     *
+     * Get the projects of the company
+     */
+    public function projects(): HasMany
+    {
+        return $this->hasMany(Project::class, 'company_id', 'id');
     }
 }
