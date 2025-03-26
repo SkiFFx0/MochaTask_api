@@ -13,18 +13,21 @@ use Illuminate\Support\Facades\URL;
 
 class InvitationController extends Controller
 {
-    public function generateInviteLink($companyId, $role)
+    public function generateInviteLink(Company $company)
     {
-        if (!Company::where('id', $companyId)->exists() || !CompanyRole::tryFrom($role))
+        $companyId = $company->id;
+
+        if (!Company::query()->where('id', $companyId)->exists())
         {
-            return ApiResponse::error('Either company or company role doesn\'t exist');
+            return ApiResponse::error('Company doesn\'t exist');
         }
 
         $link = URL::temporarySignedRoute(
             'invitation.accept',
-            now()->addHour(),
-            ['company_id' => $companyId, 'role' => $role]
-        );
+            now()->addHour(), [
+            'company_id' => $companyId,
+            'role' => CompanyRole::MEMBER
+        ]);
 
         return ApiResponse::success('Invitation created', [
             'link' => $link
@@ -39,20 +42,24 @@ class InvitationController extends Controller
         }
 
         $companyId = $request->query('company_id');
-        $role = $request->query('role');
         $userId = auth()->user()->id;
+        $role = $request->query('role');
 
-        if (CompanyUser::query()->where('company_id', $companyId)->where('user_id', $userId)->exists())
+        if (CompanyUser::query()
+            ->where('company_id', $companyId)
+            ->where('user_id', $userId)
+            ->exists())
         {
             return ApiResponse::error('You are already part of this company.');
         }
 
         // Adding user to a company
-        CompanyUser::create([
-            'company_id' => $companyId,
-            'user_id' => $userId,
-            'role' => $role
-        ]);
+        CompanyUser::setCompanyUserRole($companyId, $userId, CompanyRole::MEMBER);
+//        CompanyUser::create([
+//            'company_id' => $companyId,
+//            'user_id' => $userId,
+//            'role' => $role
+//        ]);
 
         return ApiResponse::success('Invitation accepted');
     }
@@ -60,7 +67,7 @@ class InvitationController extends Controller
     public function generateInviteToken(CreateRequest $request)
     {
         $request->validated();
-
+dd($request->all());
         $token = Crypt::encryptString(json_encode($request->all()));
 
         return ApiResponse::success('Invitation created', [
@@ -75,7 +82,7 @@ class InvitationController extends Controller
         $role = CompanyRole::from($tokenData->role); // Convert string to Enum
         $user = auth()->user();
 
-        CompanyUser::assignUserToCompanyAndAddRole($companyId, $user->id, $role);
+        CompanyUser::setCompanyUserRole($companyId, $user->id, $role);
 
         return ApiResponse::success('You have successfully accepted this invitation.', [
             'invitation' => $token,

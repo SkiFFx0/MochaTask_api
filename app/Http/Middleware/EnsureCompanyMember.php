@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\ApiResponse;
 use App\Models\Company;
 use App\Models\CompanyUser;
 use Closure;
@@ -17,21 +18,7 @@ class EnsureCompanyMember
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $userId = auth()->user()->id;
-        $companyId = $request->company_id;
-
-        $companyUser = CompanyUser::query()
-            ->where('company_id', $companyId)
-            ->where('user_id', $userId)
-            ->first();
-
-        if (!$companyUser)
-        {
-            return response()->json(['error' => 'Unauthorized. You are not part of this company.'], 403);
-        }
-
-        $request->attributes->set('companyRole', $companyUser->role);
-
+        // TODO make company.member middleware
         return $next($request);
     }
 }

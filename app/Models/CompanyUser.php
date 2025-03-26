@@ -3,9 +3,9 @@
 namespace App\Models;
 
 use App\Enums\CompanyRole;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class CompanyUser extends Model
+class CompanyUser extends Pivot
 {
     protected $table = 'company_user';
 
@@ -19,8 +19,7 @@ class CompanyUser extends Model
         'role' => CompanyRole::class, // Auto-converts role to Enum
     ];
 
-    //TODO Add inability to remove owner
-    protected static function assignUserToCompanyAndAddRole($companyId, $userId, CompanyRole $role)
+    protected static function setCompanyUserRole($companyId, $userId, CompanyRole $role)
     {
         return self::create([
             'company_id' => $companyId,
@@ -29,7 +28,16 @@ class CompanyUser extends Model
         ]);
     }
 
-    protected static function removeUserFromCompany($companyId, $userId)
+    protected static function unsetCompanyUserRole($companyId, $userId, $role)
+    {
+        return self::query()
+            ->where('company_id', $companyId->id)
+            ->where('user_id', $userId->id)
+            ->where('role', $role)
+            ->delete();
+    }
+
+    protected static function unsetCompanyUser($companyId, $userId)
     {
         return self::query()
             ->where('company_id', $companyId->id)

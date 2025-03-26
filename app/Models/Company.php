@@ -21,7 +21,7 @@ class Company extends Model
      *
      * Get the user of the company
      */
-    public function user(): BelongsToMany
+    public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'company_user', 'user_id', 'company_id')
             ->withTimestamps();

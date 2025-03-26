@@ -2,7 +2,6 @@
 
 use App\Http\Middleware\EnsureCompanyMember;
 use App\Models\ApiResponse;
-use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -28,7 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
         {
             if (get_class($e) === ValidationException::class)
             {
-                return ApiResponse::error('Input data is not correct', null, 422);
+                return ApiResponse::error('Input validation data is not correct', null, 422);
             }
             if (get_class($e) === NotFoundHttpException::class)
             {

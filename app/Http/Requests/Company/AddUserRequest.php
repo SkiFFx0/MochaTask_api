@@ -2,11 +2,9 @@
 
 namespace App\Http\Requests\Company;
 
-use App\Enums\CompanyRole;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
-class EditUserRoleRequest extends FormRequest
+class AddUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,7 +23,6 @@ class EditUserRoleRequest extends FormRequest
     {
         return [
             'user_id' => ["required", "exists:users,id"],
-            'role' => ["required", Rule::in(CompanyRole::cases())]
         ];
     }
 }
