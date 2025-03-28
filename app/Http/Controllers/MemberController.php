@@ -19,8 +19,7 @@ class MemberController extends Controller
 
         $companyId = $company->id;
 
-        $user = auth()->user();
-        $userId = $user->id;
+        $userId = $request['user_id'];
 
         $role = CompanyRole::MEMBER;
 

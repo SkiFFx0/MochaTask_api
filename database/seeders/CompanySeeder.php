@@ -14,7 +14,7 @@ class CompanySeeder extends Seeder
     public function run(): void
     {
         Company::query()->create([
-            'name' => 'Mocha',
+            'name' => 'Company 1',
         ]);
     }
 }

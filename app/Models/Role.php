@@ -8,8 +8,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Role extends Model
 {
-    use SoftDeletes;
-
     protected $table = 'roles';
 
     protected $fillable = [
@@ -23,6 +21,6 @@ class Role extends Model
      */
     public function projects(): BelongsToMany
     {
-        return $this->belongsToMany(Project::class, 'project_roles', 'project_id', 'role_id');
+        return $this->belongsToMany(Project::class, 'project_roles', 'role_id', 'project_id');
     }
 }

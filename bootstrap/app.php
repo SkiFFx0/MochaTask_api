@@ -1,11 +1,13 @@
 <?php
 
 use App\Http\Middleware\EnsureCompanyMember;
+use App\Http\Middleware\EnsureProjectMember;
 use App\Models\ApiResponse;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -19,16 +21,23 @@ return Application::configure(basePath: dirname(__DIR__))
     {
         $middleware->alias([
             'company.member' => EnsureCompanyMember::class,
+            'project.member' => EnsureProjectMember::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions)
     {
         $exceptions->render(function (Exception $e)
         {
+            if (get_class($e) === AccessDeniedHttpException::class)
+            {
+                return ApiResponse::error('You do not have permission to perform this action', null, 403);
+            }
+
             if (get_class($e) === ValidationException::class)
             {
                 return ApiResponse::error('Input validation data is not correct', null, 422);
             }
+
             if (get_class($e) === NotFoundHttpException::class)
             {
                 return ApiResponse::error('Data not found in the database', null, 404);

@@ -3,12 +3,15 @@
 namespace App\Policies;
 
 use App\Enums\CompanyRole;
-use App\Models\ApiResponse;
 use App\Models\Company;
 use App\Models\CompanyUser;
+use App\Models\Project;
+use App\Models\ProjectUser;
+use App\Models\Role;
 use App\Models\User;
+use Illuminate\Auth\Access\Response;
 
-class CompanyPolicy
+class ProjectPolicy
 {
     /**
      * Determine whether the user can view any models.
@@ -21,7 +24,7 @@ class CompanyPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Company $company): bool
+    public function view(User $user, Project $project): bool
     {
         return false;
     }
@@ -37,7 +40,7 @@ class CompanyPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Company $company): bool
+    public function update(User $user, Project $project): bool
     {
         return false;
     }
@@ -45,7 +48,7 @@ class CompanyPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Company $company): bool
+    public function delete(User $user, Project $project): bool
     {
         return false;
     }
@@ -53,7 +56,7 @@ class CompanyPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Company $company): bool
+    public function restore(User $user, Project $project): bool
     {
         return false;
     }
@@ -61,25 +64,18 @@ class CompanyPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Company $company): bool
+    public function forceDelete(User $user, Project $project): bool
     {
         return false;
     }
 
-    /**
-     * @param User $user
-     * @param Company $company
-     * @return bool
-     *
-     * Check user privileges for managing company
-     */
-    public function manage(User $user, Company $company): bool
+    public function manage(User $user, Project $project): bool
     {
         $userId = $user->id;
-        $companyId = $company->id;
+        $projectId = $project->id;
 
-        $isPrivileged = CompanyUser::query()
-            ->where('company_id', $companyId)
+        $isPrivileged = ProjectUser::query()
+            ->where('project_id', $projectId)
             ->where('user_id', $userId)
             ->privileged()
             ->exists();

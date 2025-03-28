@@ -10,12 +10,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, SoftDeletes, HasRoles, HasApiTokens;
+    use HasFactory, Notifiable, SoftDeletes, HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
@@ -60,7 +59,7 @@ class User extends Authenticatable
      */
     public function companies(): BelongsToMany
     {
-        return $this->belongsToMany(Company::class, 'company_user', 'company_id', 'user_id')
+        return $this->belongsToMany(Company::class, 'company_user', 'user_id', 'company_id')
             ->withTimestamps();
     }
 
@@ -71,7 +70,7 @@ class User extends Authenticatable
      */
     public function projects(): BelongsToMany
     {
-        return $this->belongsToMany(Project::class, 'project_user', 'project_id', 'user_id')
+        return $this->belongsToMany(Project::class, 'project_user', 'user_id', 'project_id')
             ->withTimestamps();
     }
 }

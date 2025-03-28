@@ -30,7 +30,7 @@ class ProjectController extends Controller
 
         $role = Role::query()->where('id', 1)->firstOrFail();
 
-        // Assign creator as owner
+        // Assign project creator as admin
         ProjectUser::setProjectUserRole($projectId, $userId, $role);
 
         return ApiResponse::success('Project created successfully', [
@@ -38,7 +38,7 @@ class ProjectController extends Controller
         ]);
     }
 
-    public function update(StoreRequest $request, Project $project)
+    public function update(StoreRequest $request, Company $company, Project $project)
     {
         $updateData = $request->validated();
 

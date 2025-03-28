@@ -3,13 +3,13 @@
 namespace App\Http\Middleware;
 
 use App\Models\ApiResponse;
-use App\Models\Company;
-use App\Models\CompanyUser;
+use App\Models\Project;
+use App\Models\ProjectUser;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class EnsureCompanyMember
+class EnsureProjectMember
 {
     /**
      * Handle an incoming request.
@@ -21,23 +21,23 @@ class EnsureCompanyMember
         $user = auth()->user();
         $userId = $user->id;
 
-        $company = $request->company;
+        $project = $request->project;
 
-        if (!$company instanceof Company)
+        if (!$project instanceof Project)
         {
-            $company = Company::query()->findOrFail($company);
+            $project = Project::query()->findOrFail($project);
         }
 
-        $companyId = $company->id;
+        $projectId = $project->id;
 
-        $membership = CompanyUser::query()->where([
-            ['company_id', $companyId],
+        $membership = ProjectUser::query()->where([
+            ['project_id', $projectId],
             ['user_id', $userId]
         ])->exists();
 
         if (!$membership)
         {
-            return ApiResponse::error('You are not member of this company');
+            return ApiResponse::error('You are not member of this project');
         }
 
         return $next($request);

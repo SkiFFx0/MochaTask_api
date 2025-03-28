@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\CompanyRole;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
 class CompanyUser extends Pivot
@@ -43,5 +44,10 @@ class CompanyUser extends Pivot
             ->where('company_id', $companyId->id)
             ->where('user_id', $userId->id)
             ->delete();
+    }
+
+    public function scopePrivileged(Builder $query): void
+    {
+        $query->whereIn('role', [CompanyRole::OWNER, CompanyRole::ADMIN]);
     }
 }

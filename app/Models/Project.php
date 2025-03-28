@@ -26,7 +26,7 @@ class Project extends Model
      */
     public function users(): BelongsToMany
     {
-        return $this->BelongsToMany(User::class, 'project_user', 'user_id', 'project_id')
+        return $this->BelongsToMany(User::class, 'project_user', 'project_id', 'user_id')
             ->withTimestamps();
     }
 
@@ -47,6 +47,6 @@ class Project extends Model
      */
     public function roles(): BelongsToMany
     {
-        return $this->BelongsToMany(Role::class, 'roles', 'role_id', 'project_id');
+        return $this->BelongsToMany(Role::class, 'roles', 'project_id', 'role_id');
     }
 }

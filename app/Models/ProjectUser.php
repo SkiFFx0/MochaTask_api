@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\CompanyRole;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
 class ProjectUser extends Pivot
@@ -38,5 +40,10 @@ class ProjectUser extends Pivot
             ->where('project_id', $projectId)
             ->where('user_id', $userId)
             ->delete();
+    }
+
+    public function scopePrivileged(Builder $query): void
+    {
+        $query->whereIn('role', ['admin', 'PM']);
     }
 }

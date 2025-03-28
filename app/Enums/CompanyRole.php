@@ -2,6 +2,8 @@
 
 namespace App\Enums;
 
+use App\Models\CompanyUser;
+
 enum CompanyRole: string
 {
     case OWNER = 'owner';

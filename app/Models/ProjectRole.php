@@ -13,11 +13,11 @@ class ProjectRole extends Pivot
         'role_id',
     ];
 
-    protected static function setProjectRole($projectId, $role)
+    protected static function setProjectRole($projectId, $roleId)
     {
         return self::create([
             'project_id' => $projectId,
-            'role' => $role,
+            'role_id' => $roleId,
         ]);
     }
 

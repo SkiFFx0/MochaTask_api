@@ -28,54 +28,59 @@ Route::middleware('auth:sanctum')->group(function ()
         Route::get("/{company}", [CompanyController::class, 'show']);
         Route::post("/", [CompanyController::class, 'store']);
 
-        Route::middleware(['company.member'])->group(function () //TODO placeholder middleware
+        Route::middleware(['company.member'])->group(function ()
         {
             Route::prefix('{company}')->group(function ()
             {
-                Route::get('/members', [MemberController::class, 'index']); //TODO
-                Route::get("/members/{member}", [MemberController::class, 'show']);
+                //TODO get methods
 
-                Route::get("/projects/", [ProjectController::class, 'index']); //TODO
-                Route::get("/projects/{project}", [ProjectController::class, 'show']);
-
-//                Route::middleware("can:manage,company")->group(function () //TODO placeholder policy for some reason causes unauthenticated error
-//                {
-                Route::patch("/", [CompanyController::class, 'update']);
-                Route::delete("/", [CompanyController::class, 'destroy']);
-
-                Route::prefix('invitations')->group(function ()
+                Route::middleware('can:manage,company')->group(function ()
                 {
-                    Route::post('/invitation-link-create', [InvitationController::class, 'generateInviteLink']);
-                    Route::post('/invitation-token-create', [InvitationController::class, 'generateInviteToken']);
+                    Route::patch("/", [CompanyController::class, 'update']);
+                    Route::delete("/", [CompanyController::class, 'destroy']);
 
-                    Route::get('/invitation-accept/', [InvitationController::class, 'acceptInviteLink'])
-                        ->name('invitation.accept');
-                    Route::post('/invitation-accept/{token}', [InvitationController::class, 'acceptInviteToken']);
-                }); //TODO refactor implementation
-
-                Route::prefix('members')->group(function ()
-                {
-                    Route::post("/", [MemberController::class, 'addUser']); //TODO replace with link and token invites
-                    Route::post("/{user}", [MemberController::class, 'addRole']);
-                    Route::delete('/{user}/{role}', [MemberController::class, 'removeRole']);
-                    Route::delete("/{user}", [MemberController::class, 'removeUser']);
-                });
-
-                Route::prefix('projects')->group(function () //TODO bare bone implementation
-                {
-                    Route::post("/", [ProjectController::class, 'store']);
-                    Route::patch("/{project}", [ProjectController::class, 'update']);
-                    Route::delete("/{project}", [ProjectController::class, 'destroy']);
-
-                    Route::prefix('{project}')->group(function ()
+                    Route::prefix('invitations')->group(function ()
                     {
-                        Route::prefix('roles')->group(function ()
+                        Route::post('/invitation-link-create', [InvitationController::class, 'generateInviteLink']);
+                        Route::post('/invitation-token-create', [InvitationController::class, 'generateInviteToken']);
+
+                        Route::get('/invitation-accept/', [InvitationController::class, 'acceptInviteLink'])
+                            ->name('invitation.accept');
+                        Route::post('/invitation-accept/{token}', [InvitationController::class, 'acceptInviteToken']);
+                    }); //TODO refactor implementation
+
+                    Route::prefix('members')->group(function ()
+                    {
+                        Route::post("/", [MemberController::class, 'addUser']); //TODO replace with link and token invites
+                        Route::post("/{user}", [MemberController::class, 'addRole']);
+                        Route::delete('/{user}/{role}', [MemberController::class, 'removeRole']);
+                        Route::delete("/{user}", [MemberController::class, 'removeUser']);
+                    });
+
+                    Route::prefix('projects')->group(function ()
+                    {
+                        Route::post("/", [ProjectController::class, 'store']);
+
+                        Route::middleware('project.member')->group(function ()
                         {
-                            Route::post('/', [RoleController::class, 'store']);
+                            Route::middleware('can:manage,project')->group(function ()
+                            {
+                                Route::prefix('{project}')->group(function ()
+                                {
+                                    Route::patch("/", [ProjectController::class, 'update']);
+                                    Route::delete("/", [ProjectController::class, 'destroy']);
+
+                                    Route::prefix('roles')->group(function ()
+                                    {
+                                        Route::post('/', [RoleController::class, 'store']);
+                                        Route::patch("/{role}", [RoleController::class, 'update']);
+                                        Route::delete("/{role}", [RoleController::class, 'destroy']);
+                                    });
+                                });
+                            });
                         });
                     });
                 });
-//                });
             });
         });
     });
