@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\ProjectRole;
 use App\Http\Requests\Project\StoreRequest;
 use App\Models\ApiResponse;
 use App\Models\Company;
 use App\Models\Project;
+use App\Models\ProjectRole;
 use App\Models\ProjectUser;
 use App\Models\Role;
-use DB;
 
 class ProjectController extends Controller
 {
@@ -28,10 +27,22 @@ class ProjectController extends Controller
         $user = auth()->user();
         $userId = $user->id;
 
-        $role = Role::query()->where('id', 1)->firstOrFail();
+        $role = Role::query()->where('id', 1)->firstOrFail(['name']);
+
+        $roleName = $role['name'];
+
+        ProjectRole::query()->create([
+            'project_id' => $projectId,
+            'role_id' => 1,
+        ]);
+
+        ProjectRole::query()->create([
+            'project_id' => $projectId,
+            'role_id' => 2,
+        ]);
 
         // Assign project creator as admin
-        ProjectUser::setProjectUserRole($projectId, $userId, $role);
+        ProjectUser::setProjectUserRole($projectId, $userId, $roleName);
 
         return ApiResponse::success('Project created successfully', [
             'project' => $project
@@ -49,7 +60,7 @@ class ProjectController extends Controller
         ]);
     }
 
-    public function destroy(Project $project)
+    public function destroy(Company $company, Project $project)
     {
         $project->delete();
 
