@@ -6,6 +6,7 @@ use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\TeamController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -32,7 +33,7 @@ Route::middleware('auth:sanctum')->group(function ()
         {
             Route::prefix('{company}')->group(function ()
             {
-                //TODO get methods
+                //TODO get methods just to look at the database tables
 
                 Route::middleware('can:manage,company')->group(function ()
                 {
@@ -65,8 +66,6 @@ Route::middleware('auth:sanctum')->group(function ()
 
                         Route::middleware('project.member')->group(function ()
                         {
-                            //TODO get methods
-
                             Route::middleware('can:manage,project')->group(function ()
                             {
                                 Route::prefix('{project}')->group(function ()
@@ -81,7 +80,14 @@ Route::middleware('auth:sanctum')->group(function ()
                                         Route::delete("/{role}", [RoleController::class, 'destroy']);
                                     });
 
-                                    //TODO teams then tasks
+                                    Route::prefix('teams')->group(function ()
+                                    {
+                                        Route::post('/', [TeamController::class, 'store']);
+                                        Route::patch('/{team}', [TeamController::class, 'update']);
+                                        Route::delete("/{team}", [TeamController::class, 'destroy']);
+                                    });
+
+                                    //TODO tasks
                                 });
                             });
                         });
@@ -91,3 +97,7 @@ Route::middleware('auth:sanctum')->group(function ()
         });
     });
 });
+//TODO add get methods, only to show items, which are inside other items
+//TODO add DB::transactions, reason, when query fails, previous queries still execute and sometimes id iterates without reason
+//TODO add "service layer", too much rows in controllers
+//TODO just refactor whole code upon seeing problems

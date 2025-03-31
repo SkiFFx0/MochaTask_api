@@ -35,11 +35,14 @@ class CompanyController extends Controller
         $storeData = $request->validated();
 
         $company = Company::query()->create($storeData);
+        $companyId = $company->id;
+
         $user = auth()->user();
+        $userId = $user->id;
 
         CompanyUser::query()->create([
-            'company_id' => $company->id,
-            'user_id' => $user->id,
+            'company_id' => $companyId,
+            'user_id' => $userId,
             'role' => CompanyRole::OWNER
         ]);
 
@@ -50,8 +53,6 @@ class CompanyController extends Controller
 
     public function update(UpdateRequest $request, Company $company)
     {
-        $this->authorize('manage', $company);
-
         $updateData = $request->validated();
 
         $company->update($updateData);
@@ -63,8 +64,6 @@ class CompanyController extends Controller
 
     public function destroy(Company $company)
     {
-        $this->authorize('manage', $company);
-
         $company->delete();
 
         return ApiResponse::success('Company deleted successfully');

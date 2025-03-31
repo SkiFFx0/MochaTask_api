@@ -21,9 +21,7 @@ class RoleController extends Controller
 
         $role = DB::transaction(function () use ($storeData, $projectId)
         {
-            $role = Role::query()->create([
-                'name' => $storeData['name'],
-            ]);
+            $role = Role::query()->create($storeData);
 
             $roleId = $role->id;
 
@@ -43,9 +41,7 @@ class RoleController extends Controller
 
         $roleId = $role->id;
 
-        Role::query()->where('id', $roleId)->update([
-            'name' => $updateData['name'],
-        ]);
+        Role::query()->where('id', $roleId)->update($updateData);
 
         $role = Role::query()->findOrFail($roleId);
 
@@ -57,8 +53,6 @@ class RoleController extends Controller
     public function destroy(Company $company, Project $project, Role $role)
     {
         $roleId = $role->id;
-
-        ProjectRole::query()->where('role_id', $roleId)->delete();
 
         Role::query()->where('id', $roleId)->delete();
 

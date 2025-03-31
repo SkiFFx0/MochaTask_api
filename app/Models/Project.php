@@ -49,4 +49,14 @@ class Project extends Model
     {
         return $this->BelongsToMany(Role::class, 'roles', 'project_id', 'role_id');
     }
+
+    /**
+     * @return HasMany
+     *
+     * Get the teams of the project
+     */
+    public function teams(): HasMany
+    {
+        return $this->hasMany(Team::class, 'project_id', 'id');
+    }
 }

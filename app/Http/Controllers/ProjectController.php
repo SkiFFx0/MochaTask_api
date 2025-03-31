@@ -31,14 +31,9 @@ class ProjectController extends Controller
 
         $roleName = $role['name'];
 
-        ProjectRole::query()->create([
-            'project_id' => $projectId,
-            'role_id' => 1,
-        ]);
-
-        ProjectRole::query()->create([
-            'project_id' => $projectId,
-            'role_id' => 2,
+        ProjectRole::query()->insert([
+            ['project_id' => $projectId, 'role_id' => 1],
+            ['project_id' => $projectId, 'role_id' => 2],
         ]);
 
         // Assign project creator as admin
