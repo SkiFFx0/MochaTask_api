@@ -47,7 +47,7 @@ Route::middleware('auth:sanctum')->group(function ()
                         Route::get('/invitation-accept/', [InvitationController::class, 'acceptInviteLink'])
                             ->name('invitation.accept');
                         Route::post('/invitation-accept/{token}', [InvitationController::class, 'acceptInviteToken']);
-                    }); //TODO refactor implementation
+                    }); //TODO
 
                     Route::prefix('members')->group(function ()
                     {
@@ -61,8 +61,12 @@ Route::middleware('auth:sanctum')->group(function ()
                     {
                         Route::post("/", [ProjectController::class, 'store']);
 
+                        //TODO company privileged can add to any project, project privileged can add to own project
+
                         Route::middleware('project.member')->group(function ()
                         {
+                            //TODO get methods
+
                             Route::middleware('can:manage,project')->group(function ()
                             {
                                 Route::prefix('{project}')->group(function ()
@@ -76,6 +80,8 @@ Route::middleware('auth:sanctum')->group(function ()
                                         Route::patch("/{role}", [RoleController::class, 'update']);
                                         Route::delete("/{role}", [RoleController::class, 'destroy']);
                                     });
+
+                                    //TODO teams then tasks
                                 });
                             });
                         });

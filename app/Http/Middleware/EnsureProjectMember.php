@@ -6,11 +6,14 @@ use App\Models\ApiResponse;
 use App\Models\Project;
 use App\Models\ProjectUser;
 use Closure;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class EnsureProjectMember
 {
+    use AuthorizesRequests;
+
     /**
      * Handle an incoming request.
      *
@@ -37,6 +40,14 @@ class EnsureProjectMember
 
         if (!$membership)
         {
+            $company = $request->company;
+            $companyPrivileged = $this->authorize('manage', $company);
+
+            if ($companyPrivileged->allowed())
+            {
+                return $next($request);
+            }
+
             return ApiResponse::error('You are not member of this project');
         }
 

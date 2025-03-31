@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\Enums\CompanyRole;
+use App\Models\ApiResponse;
 use App\Models\Company;
 use App\Models\CompanyUser;
 use App\Models\Project;
@@ -10,6 +11,7 @@ use App\Models\ProjectUser;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
+use Illuminate\Http\Request;
 
 class ProjectPolicy
 {
@@ -71,6 +73,8 @@ class ProjectPolicy
 
     public function manage(User $user, Project $project): bool
     {
+        $request = request();
+
         $userId = $user->id;
         $projectId = $project->id;
 
@@ -80,6 +84,8 @@ class ProjectPolicy
             ->privileged()
             ->exists();
 
-        return $isPrivileged;
+        $companyPrivileged = $request->get('isCompanyPrivileged', false);
+
+        return $isPrivileged || $companyPrivileged;
     }
 }

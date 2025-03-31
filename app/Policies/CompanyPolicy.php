@@ -7,6 +7,7 @@ use App\Models\ApiResponse;
 use App\Models\Company;
 use App\Models\CompanyUser;
 use App\Models\User;
+use Illuminate\Http\Request;
 
 class CompanyPolicy
 {
@@ -75,6 +76,8 @@ class CompanyPolicy
      */
     public function manage(User $user, Company $company): bool
     {
+        $request = request();
+
         $userId = $user->id;
         $companyId = $company->id;
 
@@ -83,6 +86,8 @@ class CompanyPolicy
             ->where('user_id', $userId)
             ->privileged()
             ->exists();
+
+        $request->attributes->set('isCompanyPrivileged', $isPrivileged);
 
         return $isPrivileged;
     }
