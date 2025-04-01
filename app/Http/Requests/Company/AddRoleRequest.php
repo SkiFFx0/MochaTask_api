@@ -24,7 +24,7 @@ class AddRoleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'role' => ["required", Rule::in(CompanyRole::cases())]
+            'role' => ['required', Rule::in(CompanyRole::cases())]
         ];
     }
 }

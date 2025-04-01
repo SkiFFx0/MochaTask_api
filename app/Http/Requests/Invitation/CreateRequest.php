@@ -24,8 +24,8 @@ class CreateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'company_id' => ["required", "exists:companies,id"],
-            'role' => ["required", Rule::in(CompanyRole::cases())],
+            'company_id' => ['required', 'exists:companies,id'],
+            'role' => ['required', Rule::in(CompanyRole::cases())],
         ];
     }
 }
