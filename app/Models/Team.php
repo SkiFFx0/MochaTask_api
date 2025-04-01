@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Team extends Model
@@ -25,5 +26,16 @@ class Team extends Model
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class, 'project_id', 'id');
+    }
+
+    /**
+     * @return BelongsToMany
+     *
+     * Get the roles of the team
+     */
+    public function role(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class, 'role_team', 'team_id', 'role_id')
+            ->withTimestamps();
     }
 }

@@ -5,9 +5,12 @@ namespace App\Models;
 use App\Enums\CompanyRole;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CompanyUser extends Pivot
 {
+    use SoftDeletes;
+
     protected $table = 'company_user';
 
     protected $fillable = [

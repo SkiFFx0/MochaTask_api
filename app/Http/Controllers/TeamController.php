@@ -7,27 +7,13 @@ use App\Http\Requests\Team\UpdateRequest;
 use App\Models\ApiResponse;
 use App\Models\Company;
 use App\Models\Project;
+use App\Models\Role;
+use App\Models\RoleTeam;
 use App\Models\Team;
-use Illuminate\Http\Request;
+use App\Models\TeamUser;
 
 class TeamController extends Controller
 {
-    public function index(Company $company, Project $project)
-    {
-        $teams = Team::all();
-
-        return ApiResponse::success('Teams', [
-            'teams' => $teams
-        ]);
-    }
-
-    public function show(Company $company, Project $project, Team $team)
-    {
-        return ApiResponse::success('Team', [
-            'team' => $team
-        ]);
-    }
-
     public function store(StoreRequest $request, Company $company, Project $project)
     {
         $storeData = $request->validated();
@@ -37,6 +23,21 @@ class TeamController extends Controller
             'name' => $storeData['name'],
             'project_id' => $projectId,
         ]);
+        $teamId = $team->id;
+
+        $user = auth()->user();
+        $userId = $user->id;
+
+        // Assign project creator as admin
+        $role = Role::query()->where('id', 1)->firstOrFail(['name']);
+        $roleName = $role['name'];
+
+        RoleTeam::query()->insert([
+            ['role_id' => 1, 'team_id' => $teamId, 'created_at' => now(), 'updated_at' => now()],
+            ['role_id' => 2, 'team_id' => $teamId, 'created_at' => now(), 'updated_at' => now()],
+        ]);
+
+        TeamUser::setTeamUserRole($teamId, $userId, $roleName);
 
         return ApiResponse::success('Team created successfully', [
             'team' => $team

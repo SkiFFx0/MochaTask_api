@@ -25,16 +25,12 @@ Route::middleware('auth:sanctum')->group(function ()
 
     Route::prefix('companies')->group(function ()
     {
-        Route::get("/", [CompanyController::class, 'index']);
-        Route::get("/{company}", [CompanyController::class, 'show']);
         Route::post("/", [CompanyController::class, 'store']);
 
-        Route::middleware(['company.member'])->group(function ()
+        Route::prefix('{company}')->group(function ()
         {
-            Route::prefix('{company}')->group(function ()
+            Route::middleware(['company.member'])->group(function ()
             {
-                //TODO get methods just to look at the database tables
-
                 Route::middleware('can:manage,company')->group(function ()
                 {
                     Route::patch("/", [CompanyController::class, 'update']);
@@ -62,32 +58,36 @@ Route::middleware('auth:sanctum')->group(function ()
                     {
                         Route::post("/", [ProjectController::class, 'store']);
 
-                        //TODO company privileged can add to any project, project privileged can add to own project
-
-                        Route::middleware('project.member')->group(function ()
+                        Route::prefix('{project}')->group(function ()
                         {
-                            Route::middleware('can:manage,project')->group(function ()
+                            Route::patch("/", [ProjectController::class, 'update']);
+                            Route::delete("/", [ProjectController::class, 'destroy']);
+
+                            //TODO company privileged can add to any team, team privileged can add to own team
+
+                            Route::prefix('teams')->group(function ()
                             {
-                                Route::prefix('{project}')->group(function ()
+                                Route::post('/', [TeamController::class, 'store']);
+
+                                Route::prefix('{team}')->group(function ()
                                 {
-                                    Route::patch("/", [ProjectController::class, 'update']);
-                                    Route::delete("/", [ProjectController::class, 'destroy']);
-
-                                    Route::prefix('roles')->group(function ()
+                                    Route::middleware('team.member')->group(function ()
                                     {
-                                        Route::post('/', [RoleController::class, 'store']);
-                                        Route::patch("/{role}", [RoleController::class, 'update']);
-                                        Route::delete("/{role}", [RoleController::class, 'destroy']);
-                                    });
+                                        Route::middleware('can:manage,team')->group(function ()
+                                        {
+                                            Route::patch("/", [TeamController::class, 'update']);
+                                            Route::delete("/", [TeamController::class, 'destroy']);
 
-                                    Route::prefix('teams')->group(function ()
-                                    {
-                                        Route::post('/', [TeamController::class, 'store']);
-                                        Route::patch('/{team}', [TeamController::class, 'update']);
-                                        Route::delete("/{team}", [TeamController::class, 'destroy']);
-                                    });
+                                            Route::prefix('roles')->group(function () //TODO add getting all roles of the company
+                                            {
+                                                Route::post('/', [RoleController::class, 'store']);
+                                                Route::patch("/{role}", [RoleController::class, 'update']);
+                                                Route::delete("/{role}", [RoleController::class, 'destroy']);
+                                            });
+                                        });
 
-                                    //TODO tasks
+                                        //TODO tasks
+                                    });
                                 });
                             });
                         });

@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Middleware\EnsureCompanyMember;
-use App\Http\Middleware\EnsureProjectMember;
+use App\Http\Middleware\EnsureTeamMember;
 use App\Models\ApiResponse;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -21,7 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
     {
         $middleware->alias([
             'company.member' => EnsureCompanyMember::class,
-            'project.member' => EnsureProjectMember::class,
+            'team.member' => EnsureTeamMember::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions)

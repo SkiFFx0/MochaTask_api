@@ -2,12 +2,9 @@
 
 namespace App\Policies;
 
-use App\Enums\CompanyRole;
-use App\Models\ApiResponse;
 use App\Models\Company;
 use App\Models\CompanyUser;
 use App\Models\User;
-use Illuminate\Http\Request;
 
 class CompanyPolicy
 {

@@ -2,48 +2,50 @@
 
 namespace App\Models;
 
-use App\Enums\CompanyRole;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ProjectUser extends Pivot
+class TeamUser extends Pivot
 {
-    protected $table = 'project_user';
+    use SoftDeletes;
+
+    protected $table = 'team_user';
 
     protected $fillable = [
-        'project_id',
+        'team_id',
         'user_id',
         'role'
     ];
 
-    protected static function setProjectUserRole($projectId, $userId, $role)
+    protected static function setTeamUserRole($teamId, $userId, $role)
     {
         return self::create([
-            'project_id' => $projectId,
+            'team_id' => $teamId,
             'user_id' => $userId,
             'role' => $role,
         ]);
     }
 
-    protected static function unsetProjectUserRole($projectId, $userId, $role)
+    protected static function unsetTeamUserRole($teamId, $userId, $role)
     {
         return self::query()
-            ->where('project_id', $projectId)
+            ->where('team_id', $teamId)
             ->where('user_id', $userId)
             ->where('role', $role)
             ->delete();
     }
 
-    protected static function unsetProjectUser($projectId, $userId)
+    protected static function unsetTeamUser($teamId, $userId)
     {
         return self::query()
-            ->where('project_id', $projectId)
+            ->where('team_id', $teamId)
             ->where('user_id', $userId)
             ->delete();
     }
 
     public function scopePrivileged(Builder $query): void
     {
-        $query->whereIn('role', ['admin', 'PM']);
+        $query->whereIn('role', ['admin', 'PM']); //TODO make dynamic fetching of "is_privileged"
     }
 }

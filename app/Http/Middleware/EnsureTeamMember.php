@@ -3,14 +3,14 @@
 namespace App\Http\Middleware;
 
 use App\Models\ApiResponse;
-use App\Models\Project;
-use App\Models\ProjectUser;
+use App\Models\Team;
+use App\Models\TeamUser;
 use Closure;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class EnsureProjectMember
+class EnsureTeamMember
 {
     use AuthorizesRequests;
 
@@ -24,17 +24,17 @@ class EnsureProjectMember
         $user = auth()->user();
         $userId = $user->id;
 
-        $project = $request->project;
+        $team = $request->team;
 
-        if (!$project instanceof Project)
+        if (!$team instanceof Team)
         {
-            $project = Project::query()->findOrFail($project);
+            $team = Team::query()->findOrFail($team);
         }
 
-        $projectId = $project->id;
+        $teamId = $team->id;
 
-        $membership = ProjectUser::query()->where([
-            ['project_id', $projectId],
+        $membership = TeamUser::query()->where([
+            ['team_id', $teamId],
             ['user_id', $userId]
         ])->exists();
 
@@ -48,7 +48,7 @@ class EnsureProjectMember
                 return $next($request);
             }
 
-            return ApiResponse::error('You are not member of this project');
+            return ApiResponse::error('You are not member of this team');
         }
 
         return $next($request);

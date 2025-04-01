@@ -14,22 +14,6 @@ class CompanyController extends Controller
 {
     use AuthorizesRequests;
 
-    public function index()
-    {
-        $companies = Company::all();
-
-        return ApiResponse::success('Companies list', [
-            'companies' => $companies
-        ]);
-    }
-
-    public function show(Company $company)
-    {
-        return ApiResponse::success('Company', [
-            'company' => $company
-        ]);
-    }
-
     public function store(StoreRequest $request)
     {
         $storeData = $request->validated();

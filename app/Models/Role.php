@@ -8,19 +8,22 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Role extends Model
 {
+    use SoftDeletes;
+
     protected $table = 'roles';
 
     protected $fillable = [
-        'name',
+        'name'
     ];
 
     /**
      * @return BelongsToMany
      *
-     * Get the projects of the role
+     * Get the teams of the role
      */
-    public function projects(): BelongsToMany
+    public function teams(): BelongsToMany
     {
-        return $this->belongsToMany(Project::class, 'project_roles', 'role_id', 'project_id');
+        return $this->belongsToMany(Team::class, 'role_team', 'role_id', 'team_id')
+            ->withTimestamps();
     }
 }

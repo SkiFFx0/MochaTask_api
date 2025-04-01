@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\ProjectUser;
+use App\Models\TeamUser;
 use App\Models\Role;
 use Illuminate\Database\Seeder;
 
-class ProjectUserSeeder extends Seeder
+class TeamUserSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -17,6 +17,6 @@ class ProjectUserSeeder extends Seeder
 
         $roleName = $role['name'];
 
-        ProjectUser::setProjectUserRole(1, 2, $roleName);
+        TeamUser::setTeamUserRole(1, 2, $roleName);
     }
 }

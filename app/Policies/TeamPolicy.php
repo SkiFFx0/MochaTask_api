@@ -2,18 +2,11 @@
 
 namespace App\Policies;
 
-use App\Enums\CompanyRole;
-use App\Models\ApiResponse;
-use App\Models\Company;
-use App\Models\CompanyUser;
-use App\Models\Project;
-use App\Models\ProjectUser;
-use App\Models\Role;
+use App\Models\Team;
+use App\Models\TeamUser;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
-use Illuminate\Http\Request;
 
-class ProjectPolicy
+class TeamPolicy
 {
     /**
      * Determine whether the user can view any models.
@@ -26,7 +19,7 @@ class ProjectPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Project $project): bool
+    public function view(User $user, Team $team): bool
     {
         return false;
     }
@@ -42,7 +35,7 @@ class ProjectPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Project $project): bool
+    public function update(User $user, Team $team): bool
     {
         return false;
     }
@@ -50,7 +43,7 @@ class ProjectPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Project $project): bool
+    public function delete(User $user, Team $team): bool
     {
         return false;
     }
@@ -58,7 +51,7 @@ class ProjectPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Project $project): bool
+    public function restore(User $user, Team $team): bool
     {
         return false;
     }
@@ -66,20 +59,29 @@ class ProjectPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Project $project): bool
+    public function forceDelete(User $user, Team $team): bool
     {
         return false;
     }
 
-    public function manage(User $user, Project $project): bool
+    /**
+     * @param User $user
+     * @param Team $team
+     * @return bool
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     *
+     * Check user privileges for managing team
+     */
+    public function manage(User $user, Team $team): bool
     {
         $request = request();
 
         $userId = $user->id;
-        $projectId = $project->id;
+        $teamId = $team->id;
 
-        $isPrivileged = ProjectUser::query()
-            ->where('project_id', $projectId)
+        $isPrivileged = TeamUser::query()
+            ->where('team_id', $teamId)
             ->where('user_id', $userId)
             ->privileged()
             ->exists();

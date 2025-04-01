@@ -26,12 +26,14 @@ class DatabaseSeeder extends Seeder
 
         $this->call([CompanyUserSeeder::class]);
 
-        $this->call([RolesSeeder::class]);
-
         $this->call([ProjectSeeder::class]);
 
-        $this->call([ProjectRoleSeeder::class]);
+        $this->call([TeamSeeder::class]);
 
-        $this->call([ProjectUserSeeder::class]);
+        $this->call([RolesSeeder::class]);
+
+        $this->call([TeamUserSeeder::class]);
+
+        $this->call([RoleTeamSeeder::class]);
     }
 }
