@@ -40,11 +40,7 @@ class RoleController extends Controller
     {
         $updateData = $request->validated();
 
-        $roleId = $role->id;
-
-        Role::query()->where('id', $roleId)->update($updateData);
-
-        $role = Role::query()->findOrFail($roleId);
+        $role->update($updateData);
 
         return ApiResponse::success('Role updated successfully.', [
             'role' => $role,

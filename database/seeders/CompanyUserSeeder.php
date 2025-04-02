@@ -13,16 +13,9 @@ class CompanyUserSeeder extends Seeder
      */
     public function run(): void
     {
-        CompanyUser::query()->create([
-            'company_id' => 1,
-            'user_id' => 1,
-            'role' => 'owner',
-        ]);
-
-        CompanyUser::query()->create([
-            'company_id' => 1,
-            'user_id' => 2,
-            'role' => 'admin',
+        CompanyUser::query()->insert([
+            ['company_id' => 1, 'user_id' => 1, 'role' => 'owner', 'created_at' => now(), 'updated_at' => now()],
+            ['company_id' => 1, 'user_id' => 2, 'role' => 'admin', 'created_at' => now(), 'updated_at' => now()]
         ]);
     }
 }

@@ -33,10 +33,12 @@ return Application::configure(basePath: dirname(__DIR__))
                 return ApiResponse::error('You do not have permission to perform this action', null, 403);
             }
 
-            if (get_class($e) === ValidationException::class)
-            {
-                return ApiResponse::error('Input validation data is not correct', null, 422);
-            }
+                if (get_class($e) === ValidationException::class)
+                {
+                    return ApiResponse::error('Input validation data is not correct', [
+                        'errors' => $e->errors()
+                    ], 422);
+                }
 
             if (get_class($e) === NotFoundHttpException::class)
             {

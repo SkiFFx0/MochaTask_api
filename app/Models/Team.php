@@ -19,32 +19,17 @@ class Team extends Model
         'project_id'
     ];
 
-    /**
-     * @return BelongsTo
-     *
-     * Get the project of the team
-     */
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class, 'project_id', 'id');
     }
 
-    /**
-     * @return BelongsToMany
-     *
-     * Get the roles of the team
-     */
     public function role(): BelongsToMany
     {
         return $this->belongsToMany(Role::class, 'role_team', 'team_id', 'role_id')
             ->withTimestamps();
     }
 
-    /**
-     * @return HasMany
-     *
-     * Get the tasks of the company
-     */
     public function tasks(): HasMany
     {
         return $this->hasMany(Task::class, 'team_id', 'id');

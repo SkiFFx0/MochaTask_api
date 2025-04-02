@@ -24,6 +24,7 @@ class StoreRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255', 'unique:tasks,name'],
             'description' => ['required', 'string', 'max:255'],
+            'files.*' => ['nullable', 'file', 'mimes:pdf,docx,pptx,xlsx,png,jpeg', 'max:10240'],
         ];
     }
 }

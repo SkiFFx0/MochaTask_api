@@ -22,8 +22,9 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255', 'unique:tasks,name'],
-            'description' => ['required', 'string', 'max:255'],
+            'name' => ['string', 'max:255', 'unique:tasks,name'],
+            'description' => ['string', 'max:255'],
+            'files.*' => ['nullable', 'file', 'mimes:pdf,docx,pptx,xlsx,png,jpeg', 'max:10240'],
         ];
     }
 }

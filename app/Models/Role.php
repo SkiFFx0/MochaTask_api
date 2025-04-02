@@ -16,11 +16,6 @@ class Role extends Model
         'name'
     ];
 
-    /**
-     * @return BelongsToMany
-     *
-     * Get the teams of the role
-     */
     public function teams(): BelongsToMany
     {
         return $this->belongsToMany(Team::class, 'role_team', 'role_id', 'team_id')

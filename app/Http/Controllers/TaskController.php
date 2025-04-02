@@ -18,7 +18,7 @@ class TaskController extends Controller
         $storeData = $request->validated();
         $teamId = $team->id;
 
-        $task = DB::transaction(function () use ($company, $project, $teamId, $storeData)
+        $query = DB::transaction(function () use ($request, $storeData, $teamId)
         {
             $task = Task::query()->create([
                 'name' => $storeData['name'],
@@ -26,13 +26,33 @@ class TaskController extends Controller
                 'team_id' => $teamId,
             ]);
 
-            //TODO attachments?
+            $attachment = null;
 
-            return $task;
+            if ($request->hasFile('files'))
+            {
+                foreach ($request->file('files') as $file)
+                {
+                    $path = $file->store('tasks', 'public');
+                    $name = $file->getClientOriginalName();
+                    $size = $file->getSize();
+
+                    $attachment = $task->files()->create([
+                        'name' => $name,
+                        'size' => $size,
+                        'path' => $path,
+                    ]);
+                }
+            }
+
+            return (object)[
+                'task' => $task,
+                'attachment' => $attachment
+            ];
         });
 
         return ApiResponse::success('Task created successfully', [
-            'task' => $task
+            'task' => $query->task,
+            'attachment' => $query->attachment,
         ]);
     }
 
@@ -40,14 +60,41 @@ class TaskController extends Controller
     {
         $updateData = $request->validated();
 
-        $task->update($updateData);
+        $query = DB::transaction(function () use ($request, $task, $updateData)
+        {
+            $task->update($updateData);
+
+            $attachment = null;
+
+            if ($request->hasFile('files'))
+            {
+                foreach ($request->file('files') as $file)
+                {
+                    $path = $file->store('tasks', 'public');
+                    $name = $file->getClientOriginalName();
+                    $size = $file->getSize();
+
+                    $attachment = $task->files()->create([
+                        'name' => $name,
+                        'size' => $size,
+                        'path' => $path,
+                    ]);
+                }
+            }
+
+            return (object)[
+                'task' => $task,
+                'attachment' => $attachment
+            ];
+        });
 
         return ApiResponse::success('Task updated successfully', [
-            'task' => $task
+            'task' => $query->task,
+            'attachment' => $query->attachment,
         ]);
     }
 
-    public function destroy(Company $company, Project $project, Team $team, Task $task)
+    public function destroy(Company $company, Project $project, Team $team, Task $task) //TODO add ability to delete only the file, not whole task
     {
         $task->delete();
 

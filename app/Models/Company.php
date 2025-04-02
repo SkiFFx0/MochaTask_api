@@ -17,22 +17,12 @@ class Company extends Model
         'name'
     ];
 
-    /**
-     * @return BelongsToMany
-     *
-     * Get the users of the company
-     */
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'company_user', 'company_id', 'user_id')
             ->withTimestamps();
     }
 
-    /**
-     * @return HasMany
-     *
-     * Get the projects of the company
-     */
     public function projects(): HasMany
     {
         return $this->hasMany(Project::class, 'company_id', 'id');

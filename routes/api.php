@@ -37,7 +37,7 @@ Route::middleware('auth:sanctum')->group(function ()
                     Route::patch("/", [CompanyController::class, 'update']);
                     Route::delete("/", [CompanyController::class, 'destroy']);
 
-                    Route::prefix('invitations')->group(function ()
+                    Route::prefix('invitations')->group(function () //TODO
                     {
                         Route::post('/invitation-link-create', [InvitationController::class, 'generateInviteLink']);
                         Route::post('/invitation-token-create', [InvitationController::class, 'generateInviteToken']);
@@ -45,14 +45,18 @@ Route::middleware('auth:sanctum')->group(function ()
                         Route::get('/invitation-accept/', [InvitationController::class, 'acceptInviteLink'])
                             ->name('invitation.accept');
                         Route::post('/invitation-accept/{token}', [InvitationController::class, 'acceptInviteToken']);
-                    }); //TODO
+                    });
 
                     Route::prefix('members')->group(function ()
                     {
                         Route::post("/", [MemberController::class, 'addUser']); //TODO replace with link and token invites
-                        Route::post("/{user}", [MemberController::class, 'addRole']);
-                        Route::delete('/{user}/{role}', [MemberController::class, 'removeRole']);
-                        Route::delete("/{user}", [MemberController::class, 'removeUser']);
+
+                        Route::prefix('{user}')->group(function ()
+                        {
+                            Route::post("/", [MemberController::class, 'addRole']);
+                            Route::delete('/{role}', [MemberController::class, 'removeRole']);
+                            Route::delete("/", [MemberController::class, 'removeUser']);
+                        });
                     });
 
                     Route::prefix('projects')->group(function ()
@@ -90,7 +94,7 @@ Route::middleware('auth:sanctum')->group(function ()
                                                 });
                                             });
 
-                                            Route::prefix('/tasks')->group(function ()
+                                            Route::prefix('tasks')->group(function ()
                                             {
                                                 Route::post('/', [TaskController::class, 'store']);
 
@@ -111,6 +115,7 @@ Route::middleware('auth:sanctum')->group(function ()
         });
     });
 });
+//TODO REFACTOR THIS WHOLE FILE
 //TODO add get methods, only to show items, which are inside other items
 //TODO add DB::transactions, reason: when query fails, previous queries still execute and sometimes id iterates without reason
 //TODO add "service layer", too much rows in controllers

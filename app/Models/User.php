@@ -51,22 +51,12 @@ class User extends Authenticatable
         ];
     }
 
-    /**
-     * @return BelongsToMany
-     *
-     * Get the companies of the user
-     */
     public function companies(): BelongsToMany
     {
         return $this->belongsToMany(Company::class, 'company_user', 'user_id', 'company_id')
             ->withTimestamps();
     }
 
-    /**
-     * @return BelongsToMany
-     *
-     * Get the teams of the user
-     */
     public function teams(): BelongsToMany
     {
         return $this->belongsToMany(Project::class, 'team_user', 'user_id', 'team_id')
