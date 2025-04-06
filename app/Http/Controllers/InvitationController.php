@@ -13,9 +13,9 @@ use Illuminate\Support\Facades\URL;
 
 class InvitationController extends Controller
 {
-    public function generateInviteLink(Company $company)
+    public function generateInviteLink(Request $request)
     {
-        $companyId = $company->id;
+        $companyId = $request->company_id;
 
         if (!Company::query()->where('id', $companyId)->exists())
         {
@@ -25,9 +25,9 @@ class InvitationController extends Controller
         $link = URL::temporarySignedRoute(
             'invitation.accept',
             now()->addHour(), [
-            'company_id' => $companyId,
-            'role' => CompanyRole::MEMBER
-        ]);
+                'company_id' => $companyId,
+            ]
+        );
 
         return ApiResponse::success('Invitation created', [
             'link' => $link
@@ -41,58 +41,26 @@ class InvitationController extends Controller
             return ApiResponse::error('Invalid or expired invite link.');
         }
 
-        $companyId = $request->query('company_id');
-        $userId = auth()->user()->id;
-        $role = $request->query('role');
+        $user = auth()->user();
+        $userId = $user->id;
+        $companyId = $request->company_id;
 
-        if (CompanyUser::query()
+        $userInCompany = CompanyUser::query()
             ->where('company_id', $companyId)
             ->where('user_id', $userId)
-            ->exists())
+            ->exists();
+
+        if ($userInCompany)
         {
             return ApiResponse::error('You are already part of this company.');
         }
 
-        // Adding user to a company
         CompanyUser::setCompanyUserRole($companyId, $userId, CompanyRole::MEMBER);
-//        CompanyUser::create([
-//            'company_id' => $companyId,
-//            'user_id' => $userId,
-//            'role' => $role
-//        ]);
 
-        return ApiResponse::success('Invitation accepted');
-    }
+        $company = Company::find($companyId);
 
-    public function generateInviteToken(CreateRequest $request)
-    {
-        $request->validated();
-        dd($request->all());
-        $token = Crypt::encryptString(json_encode($request->all()));
-
-        return ApiResponse::success('Invitation created', [
-            'invitation' => $token
+        return ApiResponse::success('Invitation accepted', [
+            'company' => $company
         ]);
-    }
-
-    public function acceptInviteToken($token)
-    {
-        $tokenData = json_decode(Crypt::decryptString($token));
-        $companyId = $tokenData->company_id;
-        $role = CompanyRole::from($tokenData->role); // Convert string to Enum
-        $user = auth()->user();
-        $userId = $user->id;
-
-        CompanyUser::setCompanyUserRole($companyId, $userId, $role);
-
-        return ApiResponse::success('You have successfully accepted this invitation.', [
-            'invitation' => $token,
-            'user' => $user
-        ]);
-    }
-
-    public function declineInviteToken($token)
-    {
-        return ApiResponse::error('Unfinished function');
     }
 }

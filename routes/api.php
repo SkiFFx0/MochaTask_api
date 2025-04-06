@@ -35,21 +35,17 @@ Route::middleware('auth:sanctum')->group(function ()
             Route::patch('/companies/{company}', [CompanyController::class, 'update']);
             Route::delete('/companies/{company}', [CompanyController::class, 'destroy']);
 
-            Route::prefix('invitations')->group(function () //TODO
+            Route::prefix('invitations')->group(function ()
             {
-                Route::post('/invitation-link-create', [InvitationController::class, 'generateInviteLink']);
-                Route::post('/invitation-token-create', [InvitationController::class, 'generateInviteToken']);
-                Route::get('/invitation-accept/', [InvitationController::class, 'acceptInviteLink'])
-                    ->name('invitation.accept');
-                Route::post('/invitation-accept/{token}', [InvitationController::class, 'acceptInviteToken']);
+                Route::post('/create', [InvitationController::class, 'generateInviteLink']);
+                Route::get('/accept', [InvitationController::class, 'acceptInviteLink'])->name('invitation.accept');
             });
 
-            Route::prefix('members')->group(function () //TODO refactor it, softdeletes are now not used here
+            Route::prefix('members/{user}')->group(function () //TODO refactor it, softdeletes are now not used here
             {
-                Route::post('/', [MemberController::class, 'addUser']); //TODO replace with link and token invites
-                Route::post('/{user}', [MemberController::class, 'addRole']);
-                Route::delete('/{user}/{role}', [MemberController::class, 'removeRole']);
-                Route::delete('/{user}', [MemberController::class, 'removeUser']);
+                Route::post('/', [MemberController::class, 'addRole']);
+                Route::delete('/{role}', [MemberController::class, 'removeRole']);
+                Route::delete('/', [MemberController::class, 'removeUser']);
             });
 
             Route::prefix('projects')->group(function ()
