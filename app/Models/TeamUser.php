@@ -8,8 +8,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TeamUser extends Pivot
 {
-    use SoftDeletes;
-
     protected $table = 'team_user';
 
     protected $fillable = [

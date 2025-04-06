@@ -81,8 +81,9 @@ dd($request->all());
         $companyId = $tokenData->company_id;
         $role = CompanyRole::from($tokenData->role); // Convert string to Enum
         $user = auth()->user();
+        $userId = $user->id;
 
-        CompanyUser::setCompanyUserRole($companyId, $user->id, $role);
+        CompanyUser::setCompanyUserRole($companyId, $userId, $role);
 
         return ApiResponse::success('You have successfully accepted this invitation.', [
             'invitation' => $token,

@@ -14,16 +14,15 @@ use Illuminate\Support\Facades\DB;
 
 class RoleController extends Controller
 {
-    public function store(StoreRequest $request, Company $company, Project $project, Team $team)
+    public function store(StoreRequest $request)
     {
-        $storeData = $request->validated();
+        $validated = $request->validated();
 
-        $teamId = $team->id;
+        $teamId = $request->team_id;
 
-        $role = DB::transaction(function () use ($storeData, $teamId)
+        $role = DB::transaction(function () use ($validated, $teamId)
         {
-            $role = Role::query()->create($storeData);
-
+            $role = Role::query()->create($validated);
             $roleId = $role->id;
 
             RoleTeam::setRoleTeam($roleId, $teamId);
@@ -36,22 +35,20 @@ class RoleController extends Controller
         ]);
     }
 
-    public function update(UpdateRequest $request, Company $company, Project $project, Team $team, Role $role)
+    public function update(UpdateRequest $request, Role $role)
     {
-        $updateData = $request->validated();
+        $validated = $request->validated();
 
-        $role->update($updateData);
+        $role->update($validated);
 
         return ApiResponse::success('Role updated successfully.', [
             'role' => $role,
         ]);
     }
 
-    public function destroy(Company $company, Project $project, Team $team, Role $role)
+    public function destroy(Role $role)
     {
-        $roleId = $role->id;
-
-        Role::query()->where('id', $roleId)->delete();
+        $role->delete();
 
         return ApiResponse::success('Role deleted successfully.');
     }

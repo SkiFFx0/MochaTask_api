@@ -20,7 +20,6 @@ class CompanyController extends Controller
 
         $company = Company::query()->create($storeData);
         $companyId = $company->id;
-
         $user = auth()->user();
         $userId = $user->id;
 

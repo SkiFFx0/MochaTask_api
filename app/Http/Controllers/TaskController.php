@@ -15,14 +15,14 @@ class TaskController extends Controller
 {
     public function store(StoreRequest $request, Company $company, Project $project, Team $team)
     {
-        $storeData = $request->validated();
+        $validated = $request->validated();
         $teamId = $team->id;
 
-        $query = DB::transaction(function () use ($request, $storeData, $teamId)
+        $query = DB::transaction(function () use ($request, $validated, $teamId)
         {
             $task = Task::query()->create([
-                'name' => $storeData['name'],
-                'description' => $storeData['description'],
+                'name' => $validated['name'],
+                'description' => $validated['description'],
                 'team_id' => $teamId,
             ]);
 
@@ -58,11 +58,11 @@ class TaskController extends Controller
 
     public function update(UpdateRequest $request, Company $company, Project $project, Team $team, Task $task)
     {
-        $updateData = $request->validated();
+        $validated = $request->validated();
 
-        $query = DB::transaction(function () use ($request, $task, $updateData)
+        $query = DB::transaction(function () use ($request, $task, $validated)
         {
-            $task->update($updateData);
+            $task->update($validated);
 
             $attachment = null;
 
@@ -94,8 +94,8 @@ class TaskController extends Controller
         ]);
     }
 
-    public function destroy(Company $company, Project $project, Team $team, Task $task) //TODO add ability to delete only the file, not whole task
-    {
+    public function destroy(Task $task) //TODO add ability to delete only the file, not whole task
+    {dd('passed', request());
         $task->delete();
 
         return ApiResponse::success('Task deleted successfully');

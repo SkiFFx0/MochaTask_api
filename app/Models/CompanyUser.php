@@ -9,8 +9,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CompanyUser extends Pivot
 {
-    use SoftDeletes;
-
     protected $table = 'company_user';
 
     protected $fillable = [

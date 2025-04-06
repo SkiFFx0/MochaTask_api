@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use stdClass;
 
-class ApiResponse extends Model
+class ApiResponse extends Model //TODO this should not be a model
 {
     public static function success($message = "OK", $data = null, $code = 200)
     {

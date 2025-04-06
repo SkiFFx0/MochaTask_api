@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Project\StoreRequest;
+use App\Http\Requests\Project\UpdateRequest;
 use App\Models\ApiResponse;
 use App\Models\Company;
 use App\Models\Project;
@@ -12,14 +13,13 @@ use App\Models\Role;
 
 class ProjectController extends Controller
 {
-    public function store(StoreRequest $request, Company $company)
+    public function store(StoreRequest $request)
     {
-        $storeData = $request->validated();
+        $validated = $request->validated();
 
-        $companyId = $company->id;
-
+        $companyId = $request->company_id;
         $project = Project::query()->create([
-            'name' => $storeData['name'],
+            'name' => $validated['name'],
             'company_id' => $companyId,
         ]);
 
@@ -28,18 +28,18 @@ class ProjectController extends Controller
         ]);
     }
 
-    public function update(StoreRequest $request, Company $company, Project $project)
+    public function update(UpdateRequest $request, Project $project)
     {
-        $updateData = $request->validated();
+        $validated = $request->validated();
 
-        $project->update($updateData);
+        $project->update($validated);
 
         return ApiResponse::success('Project updated successfully', [
             'project' => $project
         ]);
     }
 
-    public function destroy(Company $company, Project $project)
+    public function destroy(Project $project)
     {
         $project->delete();
 

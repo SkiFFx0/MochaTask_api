@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Team\StoreRequest;
 use App\Http\Requests\Team\UpdateRequest;
 use App\Models\ApiResponse;
-use App\Models\Company;
 use App\Models\Project;
 use App\Models\Role;
 use App\Models\RoleTeam;
@@ -14,29 +13,37 @@ use App\Models\TeamUser;
 
 class TeamController extends Controller
 {
-    public function store(StoreRequest $request, Company $company, Project $project)
+    public function store(StoreRequest $request)
     {
-        $storeData = $request->validated();
-        $projectId = $project->id;
+        $validated = $request->validated();
+
+        $user = auth()->user();
+        $userId = $user->id;
+        $projectId = $request->project_id;
+
+        //Check if team being created on project is in company
+        $companyId = $request->company_id;
+        $isProjectInCompany = Project::query()
+            ->where('id', $projectId)
+            ->where('company_id', $companyId)
+            ->exists();
+        if (!$isProjectInCompany)
+        {
+            return ApiResponse::error('Failed to create team in this project');
+        }
 
         $team = Team::query()->create([
-            'name' => $storeData['name'],
+            'name' => $validated['name'],
             'project_id' => $projectId,
         ]);
         $teamId = $team->id;
 
-        $user = auth()->user();
-        $userId = $user->id;
+        RoleTeam::setRoleTeam(1, $teamId);
+        RoleTeam::setRoleTeam(2, $teamId);
 
         // Assign project creator as admin
         $role = Role::query()->where('id', 1)->firstOrFail(['name']);
         $roleName = $role['name'];
-
-        RoleTeam::query()->insert([
-            ['role_id' => 1, 'team_id' => $teamId, 'created_at' => now(), 'updated_at' => now()],
-            ['role_id' => 2, 'team_id' => $teamId, 'created_at' => now(), 'updated_at' => now()],
-        ]);
-
         TeamUser::setTeamUserRole($teamId, $userId, $roleName);
 
         return ApiResponse::success('Team created successfully', [
@@ -44,18 +51,18 @@ class TeamController extends Controller
         ]);
     }
 
-    public function update(UpdateRequest $request, Company $company, Project $project, Team $team)
+    public function update(UpdateRequest $request, Team $team)
     {
-        $updateData = $request->validated();
+        $validated = $request->validated();
 
-        $team->update($updateData);
+        $team->update($validated);
 
         return ApiResponse::success('Team updated successfully', [
             'team' => $team
         ]);
     }
 
-    public function destroy(Company $company, Project $project, Team $team)
+    public function destroy(Team $team)
     {
         $team->delete();
 
