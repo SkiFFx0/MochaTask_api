@@ -1,5 +1,6 @@
 <?php
 
+use App\Helpers\ApiResponse;
 use App\Http\Middleware\EnsureCompanyMember;
 use App\Http\Middleware\EnsureCompanyPrivileges;
 use App\Http\Middleware\EnsureProjectOwnership;
@@ -7,7 +8,6 @@ use App\Http\Middleware\EnsureRoleOwnership;
 use App\Http\Middleware\EnsureTaskOwnership;
 use App\Http\Middleware\EnsureTeamMember;
 use App\Http\Middleware\EnsureTeamPrivileges;
-use App\Models\ApiResponse;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;

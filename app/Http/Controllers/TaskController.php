@@ -2,13 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ApiResponse;
 use App\Http\Requests\Task\StoreRequest;
 use App\Http\Requests\Task\UpdateRequest;
-use App\Models\ApiResponse;
-use App\Models\Company;
-use App\Models\Project;
 use App\Models\Task;
-use App\Models\Team;
 use Illuminate\Support\Facades\DB;
 
 class TaskController extends Controller

@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\ApiResponse;
 use App\Models\RoleTeam;
 use Closure;
 use Illuminate\Http\Request;
@@ -14,7 +13,7 @@ class EnsureRoleOwnership
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response) $next
      */
     public function handle(Request $request, Closure $next): Response
     {

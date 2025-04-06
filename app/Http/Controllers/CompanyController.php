@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Enums\CompanyRole;
+use App\Helpers\ApiResponse;
 use App\Http\Requests\Company\StoreRequest;
 use App\Http\Requests\Company\UpdateRequest;
-use App\Models\ApiResponse;
 use App\Models\Company;
 use App\Models\CompanyUser;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;

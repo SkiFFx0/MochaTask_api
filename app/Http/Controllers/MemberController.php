@@ -3,12 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Enums\CompanyRole;
+use App\Helpers\ApiResponse;
 use App\Http\Requests\Member\AddRoleRequest;
 use App\Http\Requests\Member\AddUserRequest;
-use App\Http\Requests\Member\RemoveRoleRequest;
-use App\Http\Requests\Member\RemoveUserRequest;
-use App\Models\ApiResponse;
-use App\Models\Company;
 use App\Models\CompanyUser;
 use App\Models\User;
 

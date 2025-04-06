@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Enums\CompanyRole;
+use App\Helpers\ApiResponse;
 use App\Http\Requests\Invitation\CreateRequest;
-use App\Models\ApiResponse;
 use App\Models\Company;
 use App\Models\CompanyUser;
 use Illuminate\Http\Request;
@@ -67,7 +67,7 @@ class InvitationController extends Controller
     public function generateInviteToken(CreateRequest $request)
     {
         $request->validated();
-dd($request->all());
+        dd($request->all());
         $token = Crypt::encryptString(json_encode($request->all()));
 
         return ApiResponse::success('Invitation created', [

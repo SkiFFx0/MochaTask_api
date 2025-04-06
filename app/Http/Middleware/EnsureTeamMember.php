@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\ApiResponse;
+use App\Helpers\ApiResponse;
 use App\Models\CompanyUser;
 use App\Models\Team;
 use App\Models\TeamUser;
