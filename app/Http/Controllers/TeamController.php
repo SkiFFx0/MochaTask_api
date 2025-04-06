@@ -9,6 +9,7 @@ use App\Models\Role;
 use App\Models\RoleTeam;
 use App\Models\Team;
 use App\Models\TeamUser;
+use Illuminate\Support\Facades\DB;
 
 class TeamController extends Controller
 {
@@ -16,23 +17,28 @@ class TeamController extends Controller
     {
         $validated = $request->validated();
 
-        $user = auth()->user();
-        $userId = $user->id;
-        $projectId = $request->project_id;
+        $team = DB::transaction(function () use ($request, $validated)
+        {
+            $user = auth()->user();
+            $userId = $user->id;
+            $projectId = $request->project_id;
 
-        $team = Team::query()->create([
-            'name' => $validated['name'],
-            'project_id' => $projectId,
-        ]);
-        $teamId = $team->id;
+            $team = Team::query()->create([
+                'name' => $validated['name'],
+                'project_id' => $projectId,
+            ]);
+            $teamId = $team->id;
 
-        RoleTeam::setRoleTeam(1, $teamId);
-        RoleTeam::setRoleTeam(2, $teamId);
+            RoleTeam::setRoleTeam(1, $teamId);
+            RoleTeam::setRoleTeam(2, $teamId);
 
-        // Assign project creator as admin
-        $role = Role::query()->where('id', 1)->firstOrFail(['name']);
-        $roleName = $role['name'];
-        TeamUser::setTeamUserRole($teamId, $userId, $roleName);
+            // Assign project creator as admin
+            $role = Role::query()->where('id', 1)->firstOrFail(['name']);
+            $roleName = $role['name'];
+            TeamUser::setTeamUserRole($teamId, $userId, $roleName);
+
+            return $team;
+        });
 
         return ApiResponse::success('Team created successfully', [
             'team' => $team

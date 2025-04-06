@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\FileController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\ProjectController;
@@ -85,11 +86,9 @@ Route::middleware('auth:sanctum')->group(function ()
                 Route::post('/', [TaskController::class, 'store']);
                 Route::patch('/{task}', [TaskController::class, 'update'])->middleware('task.ownership');
                 Route::delete('/{task}', [TaskController::class, 'destroy'])->middleware('task.ownership');
-                //TODO add ability to delete only the file, not whole task
             });
+            Route::delete('/files/{file}', [FileController::class, 'destroy'])->middleware('file.ownership');
         });
     });
 });
-//TODO add DB::transactions in controller functions where multiple queries, reason: when query fails, previous queries still execute
 //TODO add get methods, only to show items, which are inside other items
-//TODO add 'service layer', too much rows in controllers

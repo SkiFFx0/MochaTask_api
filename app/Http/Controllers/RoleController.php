@@ -15,10 +15,10 @@ class RoleController extends Controller
     {
         $validated = $request->validated();
 
-        $teamId = $request->team_id;
-
-        $role = DB::transaction(function () use ($validated, $teamId)
+        $role = DB::transaction(function () use ($request, $validated)
         {
+            $teamId = $request->team_id;
+
             $role = Role::query()->create($validated);
             $roleId = $role->id;
 

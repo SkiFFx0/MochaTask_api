@@ -3,6 +3,7 @@
 use App\Helpers\ApiResponse;
 use App\Http\Middleware\EnsureCompanyMember;
 use App\Http\Middleware\EnsureCompanyPrivileges;
+use App\Http\Middleware\EnsureFileOwnership;
 use App\Http\Middleware\EnsureProjectOwnership;
 use App\Http\Middleware\EnsureRoleOwnership;
 use App\Http\Middleware\EnsureTaskOwnership;
@@ -32,6 +33,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'project.ownership' => EnsureProjectOwnership::class,
             'role.ownership' => EnsureRoleOwnership::class,
             'task.ownership' => EnsureTaskOwnership::class,
+            'file.ownership' => EnsureFileOwnership::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions)

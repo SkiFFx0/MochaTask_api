@@ -13,10 +13,11 @@ class TaskController extends Controller
     public function store(StoreRequest $request)
     {
         $validated = $request->validated();
-        $teamId = $request->team_id;
 
-        $query = DB::transaction(function () use ($request, $validated, $teamId)
+        $query = DB::transaction(function () use ($request, $validated)
         {
+            $teamId = $request->team_id;
+
             $task = Task::query()->create([
                 'name' => $validated['name'],
                 'description' => $validated['description'],

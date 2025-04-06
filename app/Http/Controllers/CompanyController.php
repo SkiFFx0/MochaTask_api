@@ -8,26 +8,26 @@ use App\Http\Requests\Company\StoreRequest;
 use App\Http\Requests\Company\UpdateRequest;
 use App\Models\Company;
 use App\Models\CompanyUser;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\DB;
 
 class CompanyController extends Controller
 {
-    use AuthorizesRequests;
-
     public function store(StoreRequest $request)
     {
-        $storeData = $request->validated();
+        $validated = $request->validated();
 
-        $company = Company::query()->create($storeData);
-        $companyId = $company->id;
-        $user = auth()->user();
-        $userId = $user->id;
+        $company = DB::transaction(function () use ($validated)
+        {
+            $company = Company::query()->create($validated);
+            $companyId = $company->id;
+            $user = auth()->user();
+            $userId = $user->id;
+            $role = CompanyRole::OWNER;
 
-        CompanyUser::query()->create([
-            'company_id' => $companyId,
-            'user_id' => $userId,
-            'role' => CompanyRole::OWNER
-        ]);
+            CompanyUser::setCompanyUserRole($companyId, $userId, $role);
+
+            return $company;
+        });
 
         return ApiResponse::success('Company created successfully', [
             'company' => $company,
@@ -36,9 +36,9 @@ class CompanyController extends Controller
 
     public function update(UpdateRequest $request, Company $company)
     {
-        $updateData = $request->validated();
+        $validated = $request->validated();
 
-        $company->update($updateData);
+        $company->update($validated);
 
         return ApiResponse::success('Company updated successfully', [
             'company' => $company

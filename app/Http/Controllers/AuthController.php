@@ -12,9 +12,9 @@ class AuthController extends Controller
 {
     public function register(RegisterRequest $request)
     {
-        $registerUserData = $request->validated();
+        $validated = $request->validated();
 
-        $user = User::query()->create($registerUserData);
+        $user = User::query()->create($validated);
 
         return ApiResponse::success('User created successfully', [
             'user' => $user
@@ -23,11 +23,11 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request)
     {
-        $loginUserData = $request->validated();
+        $validated = $request->validated();
 
-        $user = User::query()->where('email', $loginUserData['email'])->first();
+        $user = User::query()->where('email', $validated['email'])->first();
 
-        if (!$user || !Hash::check($loginUserData['password'], $user->password))
+        if (!$user || !Hash::check($validated['password'], $user->password))
         {
             return ApiResponse::error('Invalid login credentials', null, 401);
         }
