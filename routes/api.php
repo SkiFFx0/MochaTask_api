@@ -26,22 +26,19 @@ Route::middleware('auth:sanctum')->group(function ()
     });
 
     Route::post('/companies/', [CompanyController::class, 'store']);
+    Route::get('invitations/accept', [InvitationController::class, 'acceptInviteLink'])->name('invitation.accept');
     Route::middleware('company.member')->group(function ()
     {
-        //TODO
+        //TODO add get methods, only to show items, which are inside of company, and other stuff that will not require privileges
 
         Route::middleware('company.privileges')->group(function ()
         {
             Route::patch('/companies/{company}', [CompanyController::class, 'update']);
             Route::delete('/companies/{company}', [CompanyController::class, 'destroy']);
 
-            Route::prefix('invitations')->group(function ()
-            {
-                Route::post('/create', [InvitationController::class, 'generateInviteLink']);
-                Route::get('/accept', [InvitationController::class, 'acceptInviteLink'])->name('invitation.accept');
-            });
+            Route::post('invitations/create', [InvitationController::class, 'generateInviteLink']);
 
-            Route::prefix('members/{user}')->group(function () //TODO refactor it, softdeletes are now not used here
+            Route::prefix('company-members/{user}')->group(function ()
             {
                 Route::post('/', [MemberController::class, 'addRole']);
                 Route::delete('/{role}', [MemberController::class, 'removeRole']);
@@ -61,13 +58,14 @@ Route::middleware('auth:sanctum')->group(function ()
 
     Route::middleware('team.member')->group(function ()
     {
-        //TODO
+        //TODO add get methods, only to show items, which are inside of team, and other stuff that will not require privileges
 
         Route::middleware('team.privileges')->group(function ()
         {
             Route::patch('/teams/{team}', [TeamController::class, 'update']);
             Route::delete('/teams/{team}', [TeamController::class, 'destroy']);
 
+            //TODO team members management
             //TODO company privileged can add to any team, team privileged can add to own team
 
             Route::prefix('roles')->group(function ()
@@ -77,14 +75,15 @@ Route::middleware('auth:sanctum')->group(function ()
                 Route::delete('/{role}', [RoleController::class, 'destroy'])->middleware('role.ownership');
             });
 
-            Route::prefix('tasks')->group(function ()
+            Route::prefix('tasks')->group(function () //TODO add time complexity using enum
             {
                 Route::post('/', [TaskController::class, 'store']);
                 Route::patch('/{task}', [TaskController::class, 'update'])->middleware('task.ownership');
                 Route::delete('/{task}', [TaskController::class, 'destroy'])->middleware('task.ownership');
             });
             Route::delete('/files/{file}', [FileController::class, 'destroy'])->middleware('file.ownership');
+
+            //TODO add task statuses, and ability for implementor to change it
         });
     });
 });
-//TODO add get methods, only to show items, which are inside other items

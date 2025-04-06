@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\File;
 use App\Models\Task;
-use App\Models\Team;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class TaskSeeder extends Seeder
@@ -18,6 +17,13 @@ class TaskSeeder extends Seeder
             'name' => 'Task 1',
             'description' => 'Task 1 description',
             'team_id' => 1,
+        ]);
+
+        File::query()->create([
+            'name' => 'File 1',
+            'size' => 1024,
+            'path' => 'tasks/file-1',
+            'task_id' => 1,
         ]);
     }
 }

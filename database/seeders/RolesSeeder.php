@@ -12,9 +12,14 @@ class RolesSeeder extends Seeder
      */
     public function run(): void
     {
-        Role::query()->insert([
-            ['name' => 'admin', 'is_default' => true, 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'PM', 'is_default' => true, 'created_at' => now(), 'updated_at' => now()],
+        Role::query()->create([
+            'name' => 'admin',
+            'is_default' => true,
+        ]);
+
+        Role::query()->create([
+            'name' => 'PM',
+            'is_default' => true,
         ]);
     }
 }

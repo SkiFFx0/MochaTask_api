@@ -5,44 +5,18 @@ namespace App\Http\Controllers;
 use App\Enums\CompanyRole;
 use App\Helpers\ApiResponse;
 use App\Http\Requests\Member\AddRoleRequest;
-use App\Http\Requests\Member\AddUserRequest;
 use App\Models\CompanyUser;
 use App\Models\User;
+use Illuminate\Http\Request;
 
 class MemberController extends Controller
 {
-    public function addUser(AddUserRequest $request)
-    {
-        $request->validated();
-
-        $companyId = $request->company_id;
-        $userId = $request->user_id;
-        $role = CompanyRole::MEMBER;
-
-        $membership = CompanyUser::query()
-            ->withTrashed()
-            ->where('company_id', $companyId)
-            ->where('user_id', $userId)
-            ->first();
-
-        if ($membership)
-        {
-            return ApiResponse::error('User already in the company');
-        }
-
-        // Assign user to a company
-        CompanyUser::setCompanyUserRole($companyId, $userId, $role);
-
-        return ApiResponse::success('User added successfully');
-    }
-
     public function addRole(AddRoleRequest $request, User $user)
     {
         $validated = $request->validated();
 
-        $companyId = $validated['company_id'];
         $userId = $user->id;
-        $role = CompanyRole::from($validated['role']); // Convert string to Enum
+        $companyId = $request->company_id;
 
         $membership = CompanyUser::query()
             ->where('company_id', $companyId)
@@ -54,30 +28,43 @@ class MemberController extends Controller
             return ApiResponse::error('User is not in the company');
         }
 
-//        $roleExists = CompanyUser::withTrashed()
-//            ->where('company_id', $companyId)
-//            ->where('user_id', $userId)
-//            ->where('role', $role)
-//            ->first();
+        $role = CompanyRole::from($validated['role']); // Convert string to Enum
 
-        CompanyUser::withTrashed()->updateOrCreate([ //TODO when refactor use this by MEREY
-            'company_id' => $companyId,
-            'user_id' => $userId,
+        if ($role === CompanyRole::OWNER)
+        {
+            return ApiResponse::error('You can\'t add owner role');
+        }
+
+        $roleExists = CompanyUser::query()
+            ->where('company_id', $companyId)
+            ->where('user_id', $userId)
+            ->where('role', $role)
+            ->exists();
+
+        if ($roleExists)
+        {
+            return ApiResponse::error('Role already exists');
+        }
+
+        CompanyUser::setCompanyUserRole($companyId, $userId, $role);
+
+        return ApiResponse::success('Role added successfully', [
             'role' => $role
-        ], [
-            'deleted_at' => null
         ]);
-
-        return ApiResponse::success('Role added successfully');
     }
 
-    public function removeRole(RemoveRoleRequest $request, User $user, $role)
+    public function removeRole(Request $request, User $user, $role)
     {
-        $validated = $request->validated();
+        $loggedInUserId = auth()->user()->id;
 
-        $companyId = $validated['company_id'];
         $userId = $user->id;
+        $companyId = $request->company_id;
         $role = CompanyRole::from($role); // Convert string to Enum
+
+        if ($loggedInUserId == $userId)
+        {
+            return ApiResponse::error('You can\'t remove your own role');
+        }
 
         $membership = CompanyUser::query()
             ->where('company_id', $companyId)
@@ -87,6 +74,11 @@ class MemberController extends Controller
         if (!$membership)
         {
             return ApiResponse::error('User is not in the company');
+        }
+
+        if ($role === CompanyRole::OWNER)
+        {
+            return ApiResponse::error('You can\'t remove owner role');
         }
 
         $roleExists = CompanyUser::query()
@@ -105,12 +97,17 @@ class MemberController extends Controller
         return ApiResponse::success('Role removed successfully');
     }
 
-    public function removeUser(RemoveUserRequest $request, User $user)
+    public function removeUser(Request $request, User $user)
     {
-        $validated = $request->validated();
+        $loggedInUserId = auth()->user()->id;
 
-        $companyId = $validated['company_id'];
         $userId = $user->id;
+        $companyId = $request->company_id;
+
+        if ($loggedInUserId == $userId)
+        {
+            return ApiResponse::error('You can\'t remove yourself');
+        }
 
         $membership = CompanyUser::query()
             ->where('company_id', $companyId)
@@ -122,9 +119,19 @@ class MemberController extends Controller
             return ApiResponse::error('User already is not in the company');
         }
 
+        $userIsOwner = CompanyUser::query()
+            ->where('company_id', $companyId)
+            ->where('user_id', $userId)
+            ->where('role', CompanyRole::OWNER)
+            ->exists();
+
+        if ($userIsOwner)
+        {
+            return ApiResponse::error('You can\'t remove owner');
+        }
+
         CompanyUser::unsetCompanyUser($companyId, $userId);
 
         return ApiResponse::success('User deleted successfully');
     }
 }
-//TODO add error responses to: attempting deleting yourself, deleting owner

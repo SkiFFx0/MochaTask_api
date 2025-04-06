@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\TeamUser;
 use App\Models\Role;
+use App\Models\TeamUser;
 use Illuminate\Database\Seeder;
 
 class TeamUserSeeder extends Seeder
@@ -13,10 +13,6 @@ class TeamUserSeeder extends Seeder
      */
     public function run(): void
     {
-        $role = Role::query()->where('id', 1)->firstOrFail(['name']);
-
-        $roleName = $role['name'];
-
-        TeamUser::setTeamUserRole(1, 2, $roleName);
+        TeamUser::setTeamUserRole(1, 2, 'admin');
     }
 }

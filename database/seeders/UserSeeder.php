@@ -12,7 +12,7 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::create([
+        User::query()->create([
             'first_name' => 'owner',
             'last_name' => 'owner',
             'middle_name' => 'owner',
@@ -20,7 +20,7 @@ class UserSeeder extends Seeder
             'password' => 'password',
         ]);
 
-        User::create([
+        User::query()->create([
             'first_name' => 'admin',
             'last_name' => 'admin',
             'middle_name' => 'admin',

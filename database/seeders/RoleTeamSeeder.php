@@ -12,9 +12,7 @@ class RoleTeamSeeder extends Seeder
      */
     public function run(): void
     {
-        RoleTeam::query()->insert([
-            ['role_id' => 1, 'team_id' => 1, 'created_at' => now(), 'updated_at' => now()],
-            ['role_id' => 2, 'team_id' => 1, 'created_at' => now(), 'updated_at' => now()],
-        ]);
+        RoleTeam::setRoleTeam(1, 1);
+        RoleTeam::setRoleTeam(2, 1);
     }
 }

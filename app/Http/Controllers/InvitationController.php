@@ -4,11 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Enums\CompanyRole;
 use App\Helpers\ApiResponse;
-use App\Http\Requests\Invitation\CreateRequest;
 use App\Models\Company;
 use App\Models\CompanyUser;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\URL;
 
 class InvitationController extends Controller
