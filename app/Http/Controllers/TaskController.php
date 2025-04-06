@@ -13,10 +13,10 @@ use Illuminate\Support\Facades\DB;
 
 class TaskController extends Controller
 {
-    public function store(StoreRequest $request, Company $company, Project $project, Team $team)
+    public function store(StoreRequest $request)
     {
         $validated = $request->validated();
-        $teamId = $team->id;
+        $teamId = $request->team_id;
 
         $query = DB::transaction(function () use ($request, $validated, $teamId)
         {
@@ -56,7 +56,7 @@ class TaskController extends Controller
         ]);
     }
 
-    public function update(UpdateRequest $request, Company $company, Project $project, Team $team, Task $task)
+    public function update(UpdateRequest $request, Task $task)
     {
         $validated = $request->validated();
 
@@ -94,8 +94,8 @@ class TaskController extends Controller
         ]);
     }
 
-    public function destroy(Task $task) //TODO add ability to delete only the file, not whole task
-    {dd('passed', request());
+    public function destroy(Task $task)
+    {
         $task->delete();
 
         return ApiResponse::success('Task deleted successfully');

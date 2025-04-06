@@ -21,17 +21,6 @@ class TeamController extends Controller
         $userId = $user->id;
         $projectId = $request->project_id;
 
-        //Check if team being created on project is in company
-        $companyId = $request->company_id;
-        $isProjectInCompany = Project::query()
-            ->where('id', $projectId)
-            ->where('company_id', $companyId)
-            ->exists();
-        if (!$isProjectInCompany)
-        {
-            return ApiResponse::error('Failed to create team in this project');
-        }
-
         $team = Team::query()->create([
             'name' => $validated['name'],
             'project_id' => $projectId,

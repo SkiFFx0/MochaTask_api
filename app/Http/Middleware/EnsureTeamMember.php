@@ -10,6 +10,7 @@ use Closure;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class EnsureTeamMember
 {
@@ -57,14 +58,14 @@ class EnsureTeamMember
 
             $team = Team::find($teamId);
             $teamInCompany = false;
-            if ($team && $team->project && $team->project->company_id === $companyId)
+            if ($team && $team->project && $team->project->company_id == $companyId)
             {
                 $teamInCompany = true;
             }
 
             if ($userInCompanyPrivileged && !$teamInCompany)
             {
-                return ApiResponse::error('Team not found');
+                throw new NotFoundHttpException();
             }
 
             if ($userInCompanyPrivileged && $teamInCompany)

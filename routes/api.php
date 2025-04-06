@@ -11,28 +11,28 @@ use App\Http\Controllers\TeamController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-Route::post("/register", [AuthController::class, 'register']);
-Route::post("/login", [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function ()
 {
-    Route::post("/logout", [AuthController::class, 'logout']);
+    Route::post('/logout', [AuthController::class, 'logout']);
 
     Route::prefix('users')->group(function ()
     {
-        Route::get("/", [UserController::class, 'index']);
-        Route::get("/{user}", [UserController::class, 'show']);
+        Route::get('/', [UserController::class, 'index']);
+        Route::get('/{user}', [UserController::class, 'show']);
     });
 
-    Route::post("/companies/", [CompanyController::class, 'store']);
+    Route::post('/companies/', [CompanyController::class, 'store']);
     Route::middleware('company.member')->group(function ()
     {
-        //TODO GET METHODS
+        //TODO
 
         Route::middleware('company.privileges')->group(function ()
         {
-            Route::patch("/companies/{company}", [CompanyController::class, 'update']);
-            Route::delete("/companies/{company}", [CompanyController::class, 'destroy']);
+            Route::patch('/companies/{company}', [CompanyController::class, 'update']);
+            Route::delete('/companies/{company}', [CompanyController::class, 'destroy']);
 
             Route::prefix('invitations')->group(function () //TODO
             {
@@ -45,51 +45,51 @@ Route::middleware('auth:sanctum')->group(function ()
 
             Route::prefix('members')->group(function () //TODO refactor it, softdeletes are now not used here
             {
-                Route::post("/", [MemberController::class, 'addUser']); //TODO replace with link and token invites
-                Route::post("/{user}", [MemberController::class, 'addRole']);
+                Route::post('/', [MemberController::class, 'addUser']); //TODO replace with link and token invites
+                Route::post('/{user}', [MemberController::class, 'addRole']);
                 Route::delete('/{user}/{role}', [MemberController::class, 'removeRole']);
-                Route::delete("/{user}", [MemberController::class, 'removeUser']);
+                Route::delete('/{user}', [MemberController::class, 'removeUser']);
             });
 
             Route::prefix('projects')->group(function ()
             {
-                Route::post("/", [ProjectController::class, 'store']);
-                Route::patch("/{project}", [ProjectController::class, 'update']);
-                Route::delete("/{project}", [ProjectController::class, 'destroy']);
+                Route::post('/', [ProjectController::class, 'store']);
+                Route::patch('/{project}', [ProjectController::class, 'update'])->middleware('project.ownership');
+                Route::delete('/{project}', [ProjectController::class, 'destroy'])->middleware('project.ownership');
             });
 
-            Route::post('/teams', [TeamController::class, 'store']);
+            Route::post('/teams', [TeamController::class, 'store'])->middleware('project.ownership');
         });
     });
 
-    //TODO company privileged can add to any team, team privileged can add to own team
-
     Route::middleware('team.member')->group(function ()
     {
-        //TODO GET METHODS and TASK STATUS EDITING
+        //TODO
 
         Route::middleware('team.privileges')->group(function ()
         {
-            Route::patch("/teams/{team}", [TeamController::class, 'update']);
-            Route::delete("/teams/{team}", [TeamController::class, 'destroy']);
+            Route::patch('/teams/{team}', [TeamController::class, 'update']);
+            Route::delete('/teams/{team}', [TeamController::class, 'destroy']);
+
+            //TODO company privileged can add to any team, team privileged can add to own team
 
             Route::prefix('roles')->group(function ()
             {
                 Route::post('/', [RoleController::class, 'store']);
-                Route::patch("/{role}", [RoleController::class, 'update']);
-                Route::delete("/{role}", [RoleController::class, 'destroy']);
+                Route::patch('/{role}', [RoleController::class, 'update'])->middleware('role.ownership');
+                Route::delete('/{role}', [RoleController::class, 'destroy'])->middleware('role.ownership');
             });
 
             Route::prefix('tasks')->group(function ()
             {
                 Route::post('/', [TaskController::class, 'store']);
-                Route::patch("/{task}", [TaskController::class, 'update']);
-                Route::delete("/{task}", [TaskController::class, 'destroy']);
+                Route::patch('/{task}', [TaskController::class, 'update'])->middleware('task.ownership');
+                Route::delete('/{task}', [TaskController::class, 'destroy'])->middleware('task.ownership');
+                //TODO add ability to delete only the file, not whole task
             });
         });
     });
 });
-//TODO REFACTOR CONTROLLERS
 //TODO add DB::transactions in controller functions where multiple queries, reason: when query fails, previous queries still execute
 //TODO add get methods, only to show items, which are inside other items
-//TODO add "service layer", too much rows in controllers
+//TODO add 'service layer', too much rows in controllers
