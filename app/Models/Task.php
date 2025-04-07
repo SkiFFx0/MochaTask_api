@@ -19,6 +19,8 @@ class Task extends Model
         'team_id'
     ];
 
+    //TODO timecomplexity cast enum
+
     public function team(): BelongsTo
     {
         return $this->belongsTo(Team::class, 'team_id', 'id');

@@ -2,14 +2,14 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\CompanyMemberController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\InvitationController;
-use App\Http\Controllers\MemberController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TeamController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\TeamMemberController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -18,12 +18,6 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function ()
 {
     Route::post('/logout', [AuthController::class, 'logout']);
-
-    Route::prefix('users')->group(function ()
-    {
-        Route::get('/', [UserController::class, 'index']);
-        Route::get('/{user}', [UserController::class, 'show']);
-    });
 
     Route::post('/companies/', [CompanyController::class, 'store']);
     Route::get('invitations/accept', [InvitationController::class, 'acceptInviteLink'])->name('invitation.accept');
@@ -37,12 +31,11 @@ Route::middleware('auth:sanctum')->group(function ()
             Route::delete('/companies/{company}', [CompanyController::class, 'destroy']);
 
             Route::post('invitations/create', [InvitationController::class, 'generateInviteLink']);
-
             Route::prefix('company-members/{user}')->group(function ()
             {
-                Route::post('/', [MemberController::class, 'addRole']);
-                Route::delete('/{role}', [MemberController::class, 'removeRole']);
-                Route::delete('/', [MemberController::class, 'removeUser']);
+                Route::post('/', [CompanyMemberController::class, 'addRole']);
+                Route::delete('/{role}', [CompanyMemberController::class, 'removeRole']);
+                Route::delete('/', [CompanyMemberController::class, 'removeUser']);
             });
 
             Route::prefix('projects')->group(function ()
@@ -65,6 +58,13 @@ Route::middleware('auth:sanctum')->group(function ()
             Route::patch('/teams/{team}', [TeamController::class, 'update']);
             Route::delete('/teams/{team}', [TeamController::class, 'destroy']);
 
+            Route::post('/team-members', [TeamMemberController::class, 'addUser']);
+            Route::prefix('team-members/{user}')->group(function ()
+            {
+                Route::post('/', [TeamMemberController::class, 'addRole']);
+                Route::delete('/{role}', [TeamMemberController::class, 'removeRole']);
+                Route::delete('/', [TeamMemberController::class, 'removeUser']);
+            });
             //TODO team members management
             //TODO company privileged can add to any team, team privileged can add to own team
 
@@ -87,3 +87,4 @@ Route::middleware('auth:sanctum')->group(function ()
         });
     });
 });
+//TODO using auth()->user()->id get every needed id for the operation, don't just put them in request body, FUCK MY ASS

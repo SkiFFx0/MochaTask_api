@@ -9,7 +9,7 @@ use App\Models\CompanyUser;
 use App\Models\User;
 use Illuminate\Http\Request;
 
-class MemberController extends Controller
+class CompanyMemberController extends Controller
 {
     public function addRole(AddRoleRequest $request, User $user)
     {

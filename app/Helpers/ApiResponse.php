@@ -15,7 +15,7 @@ class ApiResponse
         return response()->json([
             'message' => $message,
             'data' => $data,
-            'status' => 1,
+            'status' => true,
         ], $code);
     }
 
@@ -28,7 +28,7 @@ class ApiResponse
         return response()->json([
             'message' => $message,
             'data' => $data,
-            'status' => 0,
+            'status' => false,
         ], $code);
     }
 }

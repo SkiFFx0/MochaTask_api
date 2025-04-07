@@ -43,14 +43,18 @@ class EnsureTeamMember
             ->where('user_id', $userId)
             ->exists();
 
+        $request->attributes->set('userInTeam', $userInTeam);
+
+        $userInCompanyPrivileged = CompanyUser::query()
+            ->where('company_id', $companyId)
+            ->where('user_id', $userId)
+            ->privileged()
+            ->exists();
+
+        $request->attributes->set('userInCompanyPrivileged', $userInCompanyPrivileged);
+
         if (!$userInTeam)
         {
-            $userInCompanyPrivileged = CompanyUser::query()
-                ->where('company_id', $companyId)
-                ->where('user_id', $userId)
-                ->privileged()
-                ->exists();
-
             if (!$userInCompanyPrivileged)
             {
                 return ApiResponse::error('You are not privileged in this company to perform this action');
@@ -70,7 +74,6 @@ class EnsureTeamMember
 
             if ($userInCompanyPrivileged && $teamInCompany)
             {
-                $request->attributes->set('userInCompanyPrivileged', true);
                 return $next($request);
             }
 
