@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->boolean('is_default')->default(false);
+            $table->boolean('is_privileged')->default(false);
             $table->SoftDeletes();
             $table->timestamps();
         });

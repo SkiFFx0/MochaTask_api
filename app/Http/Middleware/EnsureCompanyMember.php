@@ -17,8 +17,7 @@ class EnsureCompanyMember
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $user = auth()->user();
-        $userId = $user->id;
+        $userId = auth()->user()->id;
         $companyId = $request->company === null ? $request->company_id : $request->company->id;
 
         $userInCompany = CompanyUser::query()

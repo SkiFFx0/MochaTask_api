@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Role;
 use App\Models\RoleTeam;
 use Illuminate\Database\Seeder;
 
@@ -13,6 +14,5 @@ class RoleTeamSeeder extends Seeder
     public function run(): void
     {
         RoleTeam::setRoleTeam(1, 1);
-        RoleTeam::setRoleTeam(2, 1);
     }
 }

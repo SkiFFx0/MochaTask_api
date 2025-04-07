@@ -15,11 +15,25 @@ class RolesSeeder extends Seeder
         Role::query()->create([
             'name' => 'admin',
             'is_default' => true,
+            'is_privileged' => true,
         ]);
 
         Role::query()->create([
             'name' => 'PM',
-            'is_default' => true,
+            'is_default' => false,
+            'is_privileged' => true,
+        ]);
+
+        Role::query()->create([
+            'name' => 'backender',
+            'is_default' => false,
+            'is_privileged' => false,
+        ]);
+
+        Role::query()->create([
+            'name' => 'frontender',
+            'is_default' => false,
+            'is_privileged' => false,
         ]);
     }
 }

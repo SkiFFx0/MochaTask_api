@@ -59,7 +59,7 @@ class User extends Authenticatable
 
     public function teams(): BelongsToMany
     {
-        return $this->belongsToMany(Project::class, 'team_user', 'user_id', 'team_id')
+        return $this->belongsToMany(Team::class, 'team_user', 'user_id', 'team_id')
             ->withTimestamps();
     }
 }

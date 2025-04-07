@@ -1,6 +1,7 @@
 <?php
 
 use App\Helpers\ApiResponse;
+use App\Http\Middleware\AssignAttributes;
 use App\Http\Middleware\EnsureCompanyMember;
 use App\Http\Middleware\EnsureCompanyPrivileges;
 use App\Http\Middleware\EnsureFileOwnership;
@@ -26,6 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware)
     {
         $middleware->alias([
+            'assign.attributes' => AssignAttributes::class,
             'company.member' => EnsureCompanyMember::class,
             'company.privileges' => EnsureCompanyPrivileges::class,
             'team.member' => EnsureTeamMember::class,

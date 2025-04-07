@@ -13,7 +13,9 @@ class CompanyUserSeeder extends Seeder
      */
     public function run(): void
     {
+        CompanyUser::setCompanyUserRole(1, 1, CompanyRole::MEMBER);
         CompanyUser::setCompanyUserRole(1, 1, CompanyRole::OWNER);
+        CompanyUser::setCompanyUserRole(1, 2, CompanyRole::MEMBER);
         CompanyUser::setCompanyUserRole(1, 2, CompanyRole::ADMIN);
     }
 }
