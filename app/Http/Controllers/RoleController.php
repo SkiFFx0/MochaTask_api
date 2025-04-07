@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class RoleController extends Controller
 {
-    public function store(StoreRequest $request)
+    public function store(StoreRequest $request) //TODO add managing 'is_privileged' column
     {
         $validated = $request->validated();
 

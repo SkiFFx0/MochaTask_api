@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('company_id')->constrained('companies')->cascadeOnDelete();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->string('role');
+            $table->boolean('is_privileged')->default(false);
             $table->timestamps();
         });
     }

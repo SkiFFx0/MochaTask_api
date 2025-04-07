@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Enums\CompanyRole;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Pivot;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CompanyUser extends Pivot
 {
@@ -26,7 +25,8 @@ class CompanyUser extends Pivot
         return self::create([
             'company_id' => $companyId,
             'user_id' => $userId,
-            'role' => $role
+            'role' => $role,
+            'is_privileged' => $role === CompanyRole::OWNER || $role === CompanyRole::ADMIN,
         ]);
     }
 
@@ -49,6 +49,6 @@ class CompanyUser extends Pivot
 
     public function scopePrivileged(Builder $query): void
     {
-        $query->whereIn('role', [CompanyRole::OWNER, CompanyRole::ADMIN]);
+        $query->where('is_privileged', true);
     }
 }

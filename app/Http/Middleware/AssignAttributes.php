@@ -22,18 +22,20 @@ class AssignAttributes
     public function handle(Request $request, Closure $next): Response
     {
         $user = auth()->user();
-        $userId = $user->id;
         $companyIds = $user->companies()->distinct()->pluck('company_id')->toArray();
+        $companyPrivilegedIds = $user->companies()->where('is_privileged', true)->distinct()->pluck('company_id')->toArray();
         $projectIds = Project::whereIn('company_id', $companyIds)->pluck('id')->toArray();
         $teamIds = $user->teams()->whereIn('project_id', $projectIds)->distinct()->pluck('team_id')->toArray();
+        $teamPrivilegedIds = $user->teams()->whereIn('project_id', $projectIds)->where('is_privileged', true)->distinct()->pluck('team_id')->toArray();
         $roleIds = RoleTeam::whereIn('team_id', $teamIds)->distinct()->pluck('role_id')->toArray();
         $taskIds = Task::whereIn('team_id', $teamIds)->pluck('id')->toArray();
         $fileIds = File::whereIn('task_id', $taskIds)->pluck('id')->toArray();
 
-        $request->attributes->set('user_id', $userId);
         $request->attributes->set('company_ids', $companyIds);
+        $request->attributes->set('company_privileged_ids', $companyPrivilegedIds);
         $request->attributes->set('project_ids', $projectIds);
         $request->attributes->set('team_ids', $teamIds);
+        $request->attributes->set('team_privileged_ids', $teamPrivilegedIds);
         $request->attributes->set('role_ids', $roleIds);
         $request->attributes->set('task_ids', $taskIds);
         $request->attributes->set('file_ids', $fileIds);

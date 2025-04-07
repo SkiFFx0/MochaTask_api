@@ -13,15 +13,14 @@ use Illuminate\Support\Facades\DB;
 class CompanyController extends Controller
 {
     public function store(StoreRequest $request)
-    {
+    {dd(request());
         $validated = $request->validated();
 
-        $company = DB::transaction(function () use ($validated)
+        $company = DB::transaction(function () use ($request, $validated)
         {
             $company = Company::query()->create($validated);
             $companyId = $company->id;
-            $user = auth()->user();
-            $userId = $user->id;
+            $userId = auth()->user()->id;
             $role = CompanyRole::OWNER;
 
             CompanyUser::setCompanyUserRole($companyId, $userId, $role);
@@ -35,7 +34,7 @@ class CompanyController extends Controller
     }
 
     public function update(UpdateRequest $request, Company $company)
-    {
+    {dd($request);
         $validated = $request->validated();
 
         $company->update($validated);

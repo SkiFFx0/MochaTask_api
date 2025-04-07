@@ -17,13 +17,10 @@ class EnsureCompanyMember
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $userId = auth()->user()->id;
         $companyId = $request->company === null ? $request->company_id : $request->company->id;
+        $companyIds = $request->attributes->get('company_ids');
 
-        $userInCompany = CompanyUser::query()
-            ->where('company_id', $companyId)
-            ->where('user_id', $userId)
-            ->exists();
+        $userInCompany = in_array($companyId, $companyIds);
 
         if (!$userInCompany)
         {

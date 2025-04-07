@@ -22,6 +22,7 @@ class TeamUser extends Pivot
             'team_id' => $teamId,
             'user_id' => $userId,
             'role' => $role,
+            'is_privileged' => Role::where('name', $role)->first()?->is_privileged ?? false
         ]);
     }
 
@@ -44,6 +45,6 @@ class TeamUser extends Pivot
 
     public function scopePrivileged(Builder $query): void
     {
-        $query->whereIn('role', ['admin', 'PM']); //TODO make dynamic fetching of "is_privileged"
+        $query->where('is_privileged', true);
     }
 }
