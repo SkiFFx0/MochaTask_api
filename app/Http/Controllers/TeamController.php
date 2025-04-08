@@ -24,13 +24,10 @@ class TeamController extends Controller
                 'name' => $validated['name'],
                 'project_id' => $projectId,
             ]);
-
             $teamId = $team->id;
-            RoleTeam::assignDefaultRoles($teamId);
 
             // Assign project creator as admin
-            $role = 'admin';
-            TeamUser::setTeamUserRole($teamId, $userId, $role);
+            TeamUser::setTeamUserRole($teamId, $userId, 'admin', true);
 
             return $team;
         });

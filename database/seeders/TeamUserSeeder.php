@@ -12,6 +12,6 @@ class TeamUserSeeder extends Seeder
      */
     public function run(): void
     {
-        TeamUser::setTeamUserRole(1, 2, 'admin');
+        TeamUser::setTeamUserRole(1, 2, 'admin', true);
     }
 }

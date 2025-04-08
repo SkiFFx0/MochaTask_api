@@ -58,22 +58,14 @@ Route::middleware(['auth:sanctum', 'assign.attributes'])->group(function ()
             Route::patch('/teams/{team}', [TeamController::class, 'update']);
             Route::delete('/teams/{team}', [TeamController::class, 'destroy']);
 
-            Route::post('/team-members', [TeamMemberController::class, 'addUser']);
             Route::prefix('team-members/{user}')->group(function ()
             {
-                Route::post('/', [TeamMemberController::class, 'addRole']);
-                Route::delete('/{role}', [TeamMemberController::class, 'removeRole']);
+                Route::post('/', [TeamMemberController::class, 'addUserWithRole']);
+                Route::patch('/', [TeamMemberController::class, 'editRole']);
                 Route::delete('/', [TeamMemberController::class, 'removeUser']);
             });
             //TODO team members management
             //TODO company privileged can add to any team, team privileged can add to own team
-
-            Route::prefix('roles')->group(function ()
-            {
-                Route::post('/', [RoleController::class, 'store']);
-                Route::patch('/{role}', [RoleController::class, 'update'])->middleware('role.ownership');
-                Route::delete('/{role}', [RoleController::class, 'destroy'])->middleware('role.ownership');
-            });
 
             Route::prefix('tasks')->group(function () //TODO add time complexity using enum
             {

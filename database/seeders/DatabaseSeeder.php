@@ -23,11 +23,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call([TeamSeeder::class]);
 
-        $this->call([RolesSeeder::class]);
-
         $this->call([TeamUserSeeder::class]);
-
-        $this->call([RoleTeamSeeder::class]);
 
         $this->call([TaskSeeder::class]);
     }

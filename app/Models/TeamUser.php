@@ -17,13 +17,13 @@ class TeamUser extends Pivot
         'is_privileged',
     ];
 
-    protected static function setTeamUserRole($teamId, $userId, $role)
+    protected static function setTeamUserRole($teamId, $userId, $role, $isPrivileged)
     {
         return self::create([
             'team_id' => $teamId,
             'user_id' => $userId,
             'role' => $role,
-            'is_privileged' => Role::where('name', $role)->first()?->is_privileged ?? false
+            'is_privileged' => $isPrivileged
         ]);
     }
 
