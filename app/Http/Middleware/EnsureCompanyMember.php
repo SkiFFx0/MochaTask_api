@@ -20,9 +20,7 @@ class EnsureCompanyMember
         $companyId = $request->company === null ? $request->company_id : $request->company->id;
         $companyIds = $request->attributes->get('company_ids');
 
-        $userInCompany = in_array($companyId, $companyIds);
-
-        if (!$userInCompany)
+        if (!in_array($companyId, $companyIds))
         {
             return ApiResponse::error('You are not member of this company');
         }

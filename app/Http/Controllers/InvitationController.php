@@ -11,14 +11,9 @@ use Illuminate\Support\Facades\URL;
 
 class InvitationController extends Controller
 {
-    public function generateInviteLink(Request $request)
+    public function generateLink(Request $request)
     {
         $companyId = $request->company_id;
-
-        if (!Company::query()->where('id', $companyId)->exists())
-        {
-            return ApiResponse::error('Company doesn\'t exist');
-        }
 
         $link = URL::temporarySignedRoute(
             'invitation.accept',
@@ -32,23 +27,19 @@ class InvitationController extends Controller
         ]);
     }
 
-    public function acceptInviteLink(Request $request)
+    public function accept(Request $request)
     {
         if (!$request->hasValidSignature())
         {
             return ApiResponse::error('Invalid or expired invite link.');
         }
 
-        $user = auth()->user();
-        $userId = $user->id;
+        $userId = auth()->user()->id;
         $companyId = $request->company_id;
 
-        $userInCompany = CompanyUser::query()
-            ->where('company_id', $companyId)
-            ->where('user_id', $userId)
-            ->exists();
+        $companyIds = $request->attributes->get('company_ids');
 
-        if ($userInCompany)
+        if (in_array($companyId, $companyIds))
         {
             return ApiResponse::error('You are already part of this company.');
         }

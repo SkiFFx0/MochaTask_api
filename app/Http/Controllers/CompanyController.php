@@ -4,16 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Enums\CompanyRole;
 use App\Helpers\ApiResponse;
-use App\Http\Requests\Company\StoreRequest;
-use App\Http\Requests\Company\UpdateRequest;
+use App\Http\Requests\Company\CompanyRequest;
 use App\Models\Company;
 use App\Models\CompanyUser;
 use Illuminate\Support\Facades\DB;
 
 class CompanyController extends Controller
 {
-    public function store(StoreRequest $request)
-    {dd(request());
+    public function store(CompanyRequest $request)
+    {
         $validated = $request->validated();
 
         $company = DB::transaction(function () use ($request, $validated)
@@ -33,8 +32,8 @@ class CompanyController extends Controller
         ]);
     }
 
-    public function update(UpdateRequest $request, Company $company)
-    {dd($request);
+    public function update(CompanyRequest $request, Company $company)
+    {
         $validated = $request->validated();
 
         $company->update($validated);

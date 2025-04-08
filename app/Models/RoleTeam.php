@@ -13,12 +13,18 @@ class RoleTeam extends Pivot
         'team_id'
     ];
 
-    protected static function setRoleTeam($roleId, $teamId)
+    protected static function assignDefaultRoles($teamId)
     {
-        return self::create([
-            'role_id' => $roleId,
-            'team_id' => $teamId,
-        ]);
+        // Fetch all roles where is_default column is true
+        $defaultRoles = Role::where('is_default', true)->get();
+
+        // Loop over each default role and attach it to the provided team
+        foreach ($defaultRoles as $role) {
+            self::create([
+                'role_id' => $role->id,
+                'team_id' => $teamId,
+            ]);
+        }
     }
 
     protected static function unsetRoleTeam($roleId, $teamId)

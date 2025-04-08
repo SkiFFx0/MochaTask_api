@@ -3,13 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ApiResponse;
-use App\Http\Requests\Project\StoreRequest;
-use App\Http\Requests\Project\UpdateRequest;
+use App\Http\Requests\Project\StoreUpdateRequest;
 use App\Models\Project;
 
 class ProjectController extends Controller
 {
-    public function store(StoreRequest $request)
+    public function store(StoreUpdateRequest $request)
     {
         $validated = $request->validated();
 
@@ -24,7 +23,7 @@ class ProjectController extends Controller
         ]);
     }
 
-    public function update(UpdateRequest $request, Project $project)
+    public function update(StoreUpdateRequest $request, Project $project)
     {
         $validated = $request->validated();
 

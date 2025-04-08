@@ -1,10 +1,12 @@
 <?php
 
-namespace App\Http\Requests\Company;
+namespace App\Http\Requests\CompanyMember;
 
+use App\Enums\CompanyRole;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class UpdateRequest extends FormRequest
+class AddRoleRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,7 +24,7 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255', 'unique:companies,name'],
+            'role' => ['required', Rule::in(CompanyRole::cases())],
         ];
     }
 }

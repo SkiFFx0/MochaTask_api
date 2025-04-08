@@ -3,15 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ApiResponse;
-use App\Http\Requests\Role\StoreRequest;
-use App\Http\Requests\Role\UpdateRequest;
+use App\Http\Requests\Role\RoleRequest;
 use App\Models\Role;
 use App\Models\RoleTeam;
 use Illuminate\Support\Facades\DB;
 
 class RoleController extends Controller
 {
-    public function store(StoreRequest $request) //TODO add managing 'is_privileged' column
+    public function store(RoleRequest $request) //TODO add managing 'is_privileged' column
     {
         $validated = $request->validated();
 
@@ -32,7 +31,7 @@ class RoleController extends Controller
         ]);
     }
 
-    public function update(UpdateRequest $request, Role $role)
+    public function update(RoleRequest $request, Role $role)
     {
         $validated = $request->validated();
 

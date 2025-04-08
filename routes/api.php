@@ -20,7 +20,7 @@ Route::middleware(['auth:sanctum', 'assign.attributes'])->group(function ()
     Route::post('/logout', [AuthController::class, 'logout']);
 
     Route::post('/companies/', [CompanyController::class, 'store']);
-    Route::get('invitations/accept', [InvitationController::class, 'acceptInviteLink'])->name('invitation.accept');
+    Route::get('invitations/accept', [InvitationController::class, 'accept'])->name('invitation.accept');
     Route::middleware('company.member')->group(function ()
     {
         //TODO add get methods, only to show items, which are inside of company, and other stuff that will not require privileges
@@ -30,7 +30,7 @@ Route::middleware(['auth:sanctum', 'assign.attributes'])->group(function ()
             Route::patch('/companies/{company}', [CompanyController::class, 'update']);
             Route::delete('/companies/{company}', [CompanyController::class, 'destroy']);
 
-            Route::post('invitations/create', [InvitationController::class, 'generateInviteLink']);
+            Route::post('invitations/create', [InvitationController::class, 'generateLink']);
             Route::prefix('company-members/{user}')->group(function ()
             {
                 Route::post('/', [CompanyMemberController::class, 'addRole']);
@@ -87,4 +87,3 @@ Route::middleware(['auth:sanctum', 'assign.attributes'])->group(function ()
         });
     });
 });
-//TODO using auth()->user()->id get every needed id for the operation, don't just put them in request body, FUCK MY ASS

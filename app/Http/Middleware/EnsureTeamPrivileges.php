@@ -17,23 +17,17 @@ class EnsureTeamPrivileges
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $user = auth()->user();
-        $userId = $user->id;
         $teamId = $request->team === null ? $request->team_id : $request->team->id;
 
-        $userInTeamPrivileged = TeamUser::query()
-            ->where('team_id', $teamId)
-            ->where('user_id', $userId)
-            ->privileged()
-            ->exists();
+        $teamPrivilegedIds = $request->attributes->get('team_privileged_ids');
 
-        if (!$userInTeamPrivileged)
+        if ($request->attributes->get('userInCompanyPrivileged', false))
         {
-            if ($request->attributes->get('userInCompanyPrivileged', false))
-            {
-                return $next($request);
-            }
+            return $next($request);
+        }
 
+        if (!in_array($teamId, $teamPrivilegedIds))
+        {
             return ApiResponse::error('You are not privileged in this team to perform this action');
         }
 

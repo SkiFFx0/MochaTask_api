@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\CompanyRole;
 use App\Helpers\ApiResponse;
-use App\Http\Requests\Member\AddRoleRequest;
+use App\Http\Requests\CompanyMember\AddRoleRequest;
 use App\Models\CompanyUser;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -15,15 +15,10 @@ class CompanyMemberController extends Controller
     {
         $validated = $request->validated();
 
-        $userId = $user->id;
         $companyId = $request->company_id;
+        $companyIds = $request->attributes->get('company_ids');
 
-        $membership = CompanyUser::query()
-            ->where('company_id', $companyId)
-            ->where('user_id', $userId)
-            ->exists();
-
-        if (!$membership)
+        if (!in_array($companyId, $companyIds))
         {
             return ApiResponse::error('User is not in the company');
         }
@@ -32,9 +27,10 @@ class CompanyMemberController extends Controller
 
         if ($role === CompanyRole::OWNER)
         {
-            return ApiResponse::error('You can\'t add owner role');
+            return ApiResponse::error('You can\'t add "owner" role');
         }
 
+        $userId = $user->id;
         $roleExists = CompanyUser::query()
             ->where('company_id', $companyId)
             ->where('user_id', $userId)
@@ -66,12 +62,9 @@ class CompanyMemberController extends Controller
             return ApiResponse::error('You can\'t remove your own role');
         }
 
-        $membership = CompanyUser::query()
-            ->where('company_id', $companyId)
-            ->where('user_id', $userId)
-            ->exists();
+        $companyIds = $request->attributes->get('company_ids');
 
-        if (!$membership)
+        if (!in_array($companyId, $companyIds))
         {
             return ApiResponse::error('User is not in the company');
         }
@@ -109,12 +102,9 @@ class CompanyMemberController extends Controller
             return ApiResponse::error('You can\'t remove yourself');
         }
 
-        $membership = CompanyUser::query()
-            ->where('company_id', $companyId)
-            ->where('user_id', $userId)
-            ->exists();
+        $companyIds = $request->attributes->get('company_ids');
 
-        if (!$membership)
+        if (!in_array($companyId, $companyIds))
         {
             return ApiResponse::error('User already is not in the company');
         }

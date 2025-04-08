@@ -17,20 +17,14 @@ class EnsureCompanyPrivileges
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $user = auth()->user();
-        $userId = $user->id;
         $companyId = $request->company === null ? $request->company_id : $request->company->id;
+        $companyPrivilegedIds = $request->attributes->get('company_privileged_ids');
 
-        $userInCompanyPrivileged = CompanyUser::query()
-            ->where('company_id', $companyId)
-            ->where('user_id', $userId)
-            ->privileged()
-            ->exists();
-
-        if (!$userInCompanyPrivileged)
+        if (!in_array($companyId, $companyPrivilegedIds))
         {
             return ApiResponse::error('You are not privileged in this company to perform this action');
         }
+
         return $next($request);
     }
 }

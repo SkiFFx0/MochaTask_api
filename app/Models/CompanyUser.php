@@ -13,7 +13,8 @@ class CompanyUser extends Pivot
     protected $fillable = [
         'company_id',
         'user_id',
-        'role'
+        'role',
+        'is_privileged',
     ];
 
     protected $casts = [

@@ -8,6 +8,6 @@ class TeamMemberController extends Controller
 {
     public function addUser(Request $request)
     {
-        dd('doesn\'t work');
+
     }
 }

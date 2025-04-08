@@ -13,7 +13,8 @@ class TeamUser extends Pivot
     protected $fillable = [
         'team_id',
         'user_id',
-        'role'
+        'role',
+        'is_privileged',
     ];
 
     protected static function setTeamUserRole($teamId, $userId, $role)

@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ApiResponse;
-use App\Http\Requests\Team\StoreRequest;
-use App\Http\Requests\Team\UpdateRequest;
-use App\Models\Role;
+use App\Http\Requests\Team\TeamRequest;
 use App\Models\RoleTeam;
 use App\Models\Team;
 use App\Models\TeamUser;
@@ -13,29 +11,26 @@ use Illuminate\Support\Facades\DB;
 
 class TeamController extends Controller
 {
-    public function store(StoreRequest $request)
+    public function store(TeamRequest $request)
     {
         $validated = $request->validated();
 
         $team = DB::transaction(function () use ($request, $validated)
         {
-            $user = auth()->user();
-            $userId = $user->id;
+            $userId = auth()->user()->id;
             $projectId = $request->project_id;
 
             $team = Team::query()->create([
                 'name' => $validated['name'],
                 'project_id' => $projectId,
             ]);
-            $teamId = $team->id;
 
-            RoleTeam::setRoleTeam(1, $teamId);
-            RoleTeam::setRoleTeam(2, $teamId);
+            $teamId = $team->id;
+            RoleTeam::assignDefaultRoles($teamId);
 
             // Assign project creator as admin
-            $role = Role::query()->where('id', 1)->firstOrFail(['name']);
-            $roleName = $role['name'];
-            TeamUser::setTeamUserRole($teamId, $userId, $roleName);
+            $role = 'admin';
+            TeamUser::setTeamUserRole($teamId, $userId, $role);
 
             return $team;
         });
@@ -45,7 +40,7 @@ class TeamController extends Controller
         ]);
     }
 
-    public function update(UpdateRequest $request, Team $team)
+    public function update(TeamRequest $request, Team $team)
     {
         $validated = $request->validated();
 

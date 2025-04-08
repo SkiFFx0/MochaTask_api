@@ -17,15 +17,10 @@ class EnsureProjectOwnership
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $companyId = $request->company_id;
         $projectId = $request->project === null ? $request->project_id : $request->project->id;
+        $projectAccessIds = $request->attributes->get('project_access_ids');
 
-        $projectInCompany = Project::query()
-            ->where('id', $projectId)
-            ->where('company_id', $companyId)
-            ->exists();
-
-        if (!$projectInCompany)
+        if (!in_array($projectId, $projectAccessIds))
         {
             throw new NotFoundHttpException();
         }
