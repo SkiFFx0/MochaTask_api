@@ -36,9 +36,9 @@ class EnsureTeamMember
             {
                 return ApiResponse::error('You are not member of this team');
             }
-        }
 
-        $request->attributes->set('userInCompanyPrivileged', true);
+            $request->attributes->set('company_privileged', true);
+        }
 
         return $next($request);
     }

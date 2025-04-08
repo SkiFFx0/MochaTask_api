@@ -21,7 +21,7 @@ class EnsureTeamPrivileges
 
         $teamPrivilegedIds = $request->attributes->get('team_privileged_ids');
 
-        if ($request->attributes->get('userInCompanyPrivileged', false))
+        if ($request->attributes->get('company_privileged', false))
         {
             return $next($request);
         }

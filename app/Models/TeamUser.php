@@ -27,15 +27,6 @@ class TeamUser extends Pivot
         ]);
     }
 
-    protected static function unsetTeamUserRole($teamId, $userId, $role)
-    {
-        return self::query()
-            ->where('team_id', $teamId)
-            ->where('user_id', $userId)
-            ->where('role', $role)
-            ->delete();
-    }
-
     protected static function unsetTeamUser($teamId, $userId)
     {
         return self::query()

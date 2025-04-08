@@ -6,7 +6,6 @@ use App\Http\Controllers\CompanyMemberController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\ProjectController;
-use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TeamMemberController;
@@ -64,8 +63,6 @@ Route::middleware(['auth:sanctum', 'assign.attributes'])->group(function ()
                 Route::patch('/', [TeamMemberController::class, 'editRole']);
                 Route::delete('/', [TeamMemberController::class, 'removeUser']);
             });
-            //TODO team members management
-            //TODO company privileged can add to any team, team privileged can add to own team
 
             Route::prefix('tasks')->group(function () //TODO add time complexity using enum
             {
