@@ -13,19 +13,14 @@ class EnsureTaskOwnership
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response) $next
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $teamId = $request->team_id;
-        $taskId = $request->task->id;
+        $taskId = $request->task === null ? $request->task_id : $request->task->id;
+        $taskAccessIds = $request->attributes->get('task_access_ids');
 
-        $taskInTeam = Task::query()
-            ->where('id', $taskId)
-            ->where('team_id', $teamId)
-            ->exists();
-
-        if (!$taskInTeam)
+        if (!in_array($taskId, $taskAccessIds))
         {
             throw new NotFoundHttpException();
         }

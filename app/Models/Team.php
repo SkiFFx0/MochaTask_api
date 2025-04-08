@@ -24,14 +24,13 @@ class Team extends Model
         return $this->belongsTo(Project::class, 'project_id', 'id');
     }
 
-//    public function roles(): BelongsToMany
-//    {
-//        return $this->belongsToMany(Role::class, 'role_team', 'team_id', 'role_id')
-//            ->withTimestamps();
-//    }
-
     public function tasks(): HasMany
     {
         return $this->hasMany(Task::class, 'team_id', 'id');
+    }
+
+    public function statuses(): BelongsToMany
+    {
+        return $this->belongsToMany(Status::class, 'team_status', 'team_id', 'status_id');
     }
 }

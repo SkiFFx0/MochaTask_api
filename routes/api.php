@@ -6,6 +6,7 @@ use App\Http\Controllers\CompanyMemberController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\StatusController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TeamMemberController;
@@ -64,15 +65,19 @@ Route::middleware(['auth:sanctum', 'assign.attributes'])->group(function ()
                 Route::delete('/', [TeamMemberController::class, 'removeUser']);
             });
 
-            Route::prefix('tasks')->group(function () //TODO add time complexity using enum
+            Route::prefix('statuses')->group(function ()
+            {
+                Route::post('/', [StatusController::class, 'store']);
+            });
+            //TODO add task statuses, and ability for implementor to change it
+
+            Route::prefix('tasks')->group(function ()
             {
                 Route::post('/', [TaskController::class, 'store']);
                 Route::patch('/{task}', [TaskController::class, 'update'])->middleware('task.ownership');
                 Route::delete('/{task}', [TaskController::class, 'destroy'])->middleware('task.ownership');
             });
             Route::delete('/files/{file}', [FileController::class, 'destroy'])->middleware('file.ownership');
-
-            //TODO add task statuses, and ability for implementor to change it
         });
     });
 });

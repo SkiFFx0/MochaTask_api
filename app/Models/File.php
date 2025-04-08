@@ -10,6 +10,8 @@ class File extends Model
 {
     use SoftDeletes;
 
+    protected $table = 'files';
+
     protected $fillable = [
         'name',
         'size',

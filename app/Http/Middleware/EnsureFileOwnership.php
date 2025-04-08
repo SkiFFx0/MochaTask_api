@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\File;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,15 +16,10 @@ class EnsureFileOwnership
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $taskId = $request->task_id;
-        $fileId = $request->file->id;
+        $fileId = $request->file === null ? $request->file_id : $request->file->id;
+        $fileAccessIds = $request->attributes->get('file_access_ids');
 
-        $fileInTask = File::query()
-            ->where('id', $fileId)
-            ->where('task_id', $taskId)
-            ->exists();
-
-        if (!$fileInTask)
+        if (!in_array($fileId, $fileAccessIds))
         {
             throw new NotFoundHttpException();
         }

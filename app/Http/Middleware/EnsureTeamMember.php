@@ -31,8 +31,9 @@ class EnsureTeamMember
         if (!in_array($teamId, $teamIds))
         {
             $companyPrivilegedIds = $request->attributes->get('company_privileged_ids');
+            $team = Team::find($teamId);
 
-            if (!in_array($companyId, $companyPrivilegedIds))
+            if (!in_array($companyId, $companyPrivilegedIds) || !$team)
             {
                 return ApiResponse::error('You are not member of this team');
             }
