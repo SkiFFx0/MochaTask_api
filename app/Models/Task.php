@@ -16,12 +16,24 @@ class Task extends Model
     protected $fillable = [
         'name',
         'description',
-        'team_id'
+        'status_id',
+        'team_id',
+        'user_id',
     ];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
 
     public function team(): BelongsTo
     {
         return $this->belongsTo(Team::class, 'team_id', 'id');
+    }
+
+    public function status(): BelongsTo
+    {
+        return $this->belongsTo(Status::class, 'status_id', 'id');
     }
 
     public function files(): HasMany

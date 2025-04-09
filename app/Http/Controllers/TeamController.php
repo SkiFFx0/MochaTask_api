@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\ApiResponse;
 use App\Http\Requests\Team\TeamRequest;
 use App\Models\RoleTeam;
+use App\Models\StatusTeam;
 use App\Models\Team;
 use App\Models\TeamUser;
 use Illuminate\Support\Facades\DB;
@@ -26,8 +27,8 @@ class TeamController extends Controller
             ]);
             $teamId = $team->id;
 
-            // Assign project creator as admin
             TeamUser::setTeamUserRole($teamId, $userId, 'admin', true);
+            StatusTeam::assignDefaultStatuses($teamId);
 
             return $team;
         });

@@ -41,11 +41,6 @@ class TeamMemberController extends Controller
             return ApiResponse::error('This user is already a member of this team');
         }
 
-        if (!$request->attributes->get('company_privileged', false))
-        {
-            return ApiREsponse::error('You are not privileged in this team to add a new member');
-        }
-
         TeamUser::setTeamUserRole($teamId, $userId, $validated['role'], $validated['is_privileged']);
 
         return ApiResponse::success('User added successfully', [

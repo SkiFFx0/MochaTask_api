@@ -16,7 +16,9 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('description');
+            $table->foreignId('status_id')->constrained('statuses');
             $table->foreignId('team_id')->constrained('teams')->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained('users');
             $table->SoftDeletes();
             $table->timestamps();
         });

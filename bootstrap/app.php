@@ -6,6 +6,7 @@ use App\Http\Middleware\EnsureCompanyMember;
 use App\Http\Middleware\EnsureCompanyPrivileges;
 use App\Http\Middleware\EnsureFileOwnership;
 use App\Http\Middleware\EnsureProjectOwnership;
+use App\Http\Middleware\EnsureStatusOwnership;
 use App\Http\Middleware\EnsureTaskOwnership;
 use App\Http\Middleware\EnsureTeamMember;
 use App\Http\Middleware\EnsureTeamPrivileges;
@@ -32,6 +33,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'team.member' => EnsureTeamMember::class,
             'team.privileges' => EnsureTeamPrivileges::class,
             'project.ownership' => EnsureProjectOwnership::class,
+            'status.ownership' => EnsureStatusOwnership::class,
             'task.ownership' => EnsureTaskOwnership::class,
             'file.ownership' => EnsureFileOwnership::class,
         ]);

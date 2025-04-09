@@ -13,6 +13,18 @@ class StatusTeam extends Pivot
         'team_id',
     ];
 
+    public static function assignDefaultStatuses($teamId)
+    {
+        $defaultStatuses = Status::where('is_default', true)->get();
+
+        foreach ($defaultStatuses as $status) {
+            self::create([
+                'status_id' => $status->id,
+                'team_id' => $teamId,
+            ]);
+        }
+    }
+
     public static function setStatusTeam($statusId, $teamId)
     {
         StatusTeam::query()->create([

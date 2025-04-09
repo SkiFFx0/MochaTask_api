@@ -25,6 +25,13 @@ class EnsureCompanyMember
             return ApiResponse::error('You are not member of this company');
         }
 
+        $companyPrivilegedIds = $request->attributes->get('company_privileged_ids');
+
+        if (in_array($companyId, $companyPrivilegedIds))
+        {
+            $request->attributes->set('company_privileged', true);
+        }
+
         return $next($request);
     }
 }

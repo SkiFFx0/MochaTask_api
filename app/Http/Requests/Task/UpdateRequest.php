@@ -25,6 +25,7 @@ class UpdateRequest extends FormRequest
             'name' => ['string', 'max:255', 'unique:tasks,name'],
             'description' => ['string', 'max:255'],
             'files.*' => ['nullable', 'file', 'mimes:pdf,docx,pptx,xlsx,png,jpeg', 'max:10240'],
+            'user_id' => ['nullable', 'exists:users,id']
         ];
     }
 }

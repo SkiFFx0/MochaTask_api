@@ -17,10 +17,9 @@ class EnsureCompanyPrivileges
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $companyId = $request->company === null ? $request->company_id : $request->company->id;
-        $companyPrivilegedIds = $request->attributes->get('company_privileged_ids');
+        $companyPrivileged = $request->attributes->get('company_privileged', false);
 
-        if (!in_array($companyId, $companyPrivilegedIds))
+        if (!$companyPrivileged)
         {
             return ApiResponse::error('You are not privileged in this company to perform this action');
         }

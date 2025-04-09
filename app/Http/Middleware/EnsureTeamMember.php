@@ -3,14 +3,11 @@
 namespace App\Http\Middleware;
 
 use App\Helpers\ApiResponse;
-use App\Models\CompanyUser;
 use App\Models\Team;
-use App\Models\TeamUser;
 use Closure;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class EnsureTeamMember
 {
@@ -26,9 +23,9 @@ class EnsureTeamMember
         $companyId = $request->company_id;
         $teamId = $request->team === null ? $request->team_id : $request->team->id;
 
-        $teamIds = $request->attributes->get('team_ids');
+        $teamAccessIds = $request->attributes->get('team_access_ids');
 
-        if (!in_array($teamId, $teamIds))
+        if (!in_array($teamId, $teamAccessIds))
         {
             $companyPrivilegedIds = $request->attributes->get('company_privileged_ids');
             $team = Team::find($teamId);
@@ -39,6 +36,13 @@ class EnsureTeamMember
             }
 
             $request->attributes->set('company_privileged', true);
+        }
+
+        $teamPrivilegedIds = $request->attributes->get('team_privileged_ids');
+
+        if (in_array($teamId, $teamPrivilegedIds))
+        {
+            $request->attributes->set('team_privileged', true);
         }
 
         return $next($request);

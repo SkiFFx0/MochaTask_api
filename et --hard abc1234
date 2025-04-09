@@ -1,0 +1,32 @@
+[33m4f17cc0[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mdev[m[33m)[m Revert "almost finish"
+[33md59d7b9[m finish
+[33m8fabe9f[m[33m ([m[1;31morigin/dev[m[33m)[m status store done
+[33ma66ecb7[m TeamMemberController done
+[33me328ec4[m deleted Role, RoleTeam models
+[33m000f9df[m TeamMemberController addUser done
+[33mcd0d2ed[m works 100% up until team creation, deleted unneded requests
+[33m8d6e0a3[m assign.attributes middleware is better now, with checking privileges
+[33mec98be2[m new custom assign.attributes middleware done
+[33m51b04ba[m before refactoring everything (again)
+[33m87bf067[m member controller done
+[33md3cf121[m invitations done
+[33m7983fec[m added deleting only the file from task
+[33mc341aae[m now ApiResponse is in Helpers dir
+[33m3c12bcd[m added middlewares to check ownership of items
+[33m6c93269[m NOW middlewares are fully working
+[33md8b7927[m tasks have attachments now
+[33md250c37[m basic crud for tasks
+[33m144f325[m big refactor, projects > (new)teams > members = roles
+[33md97f6dd[m teams crud
+[33m6fb78e9[m finilized middlewares and policies
+[33mec1876b[m fixed default role creation within project
+[33m5bba685[m everything that is written, pretty much works
+[33m0db7098[m something something
+[33m98c77c1[m before nesting pivots
+[33m103f19e[m link invites
+[33m14eb575[m invitation using Crypt facade, not finished and deprecated
+[33me794b98[m somehow user crud to company works
+[33m214d1b4[m I don't know, nothing works
+[33mf532435[m Added crud for users, companies and projects
+[33m29f5d78[m first dev commit
+[33m0d47db0[m first commit

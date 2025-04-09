@@ -52,6 +52,7 @@ Route::middleware(['auth:sanctum', 'assign.attributes'])->group(function ()
     Route::middleware('team.member')->group(function ()
     {
         //TODO add get methods, only to show items, which are inside of team, and other stuff that will not require privileges
+        Route::patch('/task-status/{task}', [TaskController::class, 'changeStatus'])->middleware(['task.ownership', 'status.ownership']);
 
         Route::middleware('team.privileges')->group(function ()
         {
@@ -68,12 +69,13 @@ Route::middleware(['auth:sanctum', 'assign.attributes'])->group(function ()
             Route::prefix('statuses')->group(function ()
             {
                 Route::post('/', [StatusController::class, 'store']);
+                Route::delete('/{status}', [StatusController::class, 'destroy']);
             });
             //TODO add task statuses, and ability for implementor to change it
 
             Route::prefix('tasks')->group(function ()
             {
-                Route::post('/', [TaskController::class, 'store']);
+                Route::post('/', [TaskController::class, 'store'])->middleware('status.ownership');
                 Route::patch('/{task}', [TaskController::class, 'update'])->middleware('task.ownership');
                 Route::delete('/{task}', [TaskController::class, 'destroy'])->middleware('task.ownership');
             });

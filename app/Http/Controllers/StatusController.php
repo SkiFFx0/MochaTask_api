@@ -6,6 +6,7 @@ use App\Helpers\ApiResponse;
 use App\Http\Requests\Status\StoreRequest;
 use App\Models\Status;
 use App\Models\StatusTeam;
+use Illuminate\Http\Request;
 
 class StatusController extends Controller
 {
@@ -40,5 +41,24 @@ class StatusController extends Controller
         return ApiResponse::success('Status added successfully', [
             'status' => $status,
         ]);
+    }
+
+    public function destroy(Request $request, Status $status)
+    {
+        $teamId = $request->team_id;
+
+        $status = StatusTeam::query()
+            ->where('status_id', $status->id)
+            ->where('team_id', $teamId)
+            ->first();
+
+        if (!$status)
+        {
+            return ApiResponse::error('Status not found');
+        }
+
+        $status->delete();
+
+        return ApiResponse::success('Status deleted successfully');
     }
 }
