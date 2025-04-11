@@ -5,12 +5,26 @@ namespace App\Http\Controllers;
 use App\Helpers\ApiResponse;
 use App\Http\Requests\TeamMember\RoleRequest;
 use App\Models\Project;
+use App\Models\Team;
 use App\Models\TeamUser;
 use App\Models\User;
 use Illuminate\Http\Request;
 
 class TeamMemberController extends Controller
 {
+    public function index(Request $request)
+    {
+        $teamId = $request->team_id;
+        $team = Team::find($teamId);
+        $teamName = $team->name;
+
+        $teamMembers = $team->users()->get();
+
+        return ApiResponse::success("Members inside $teamName team", [
+            'Team members' => $teamMembers
+        ]);
+    }
+
     public function addUserWithRole(RoleRequest $request, User $user)
     {
         $validated = $request->validated();
@@ -101,7 +115,7 @@ class TeamMemberController extends Controller
 
         if ($loggedInUserId == $userId)
         {
-            return ApiResponse::error('You can\'t delete yourself');
+            return ApiResponse::error('You can\'t remove yourself');
         }
 
         $companyIds = $user->companies()->distinct()->pluck('company_id')->toArray();

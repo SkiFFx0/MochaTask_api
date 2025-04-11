@@ -2,11 +2,8 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\CompanyUser;
 use App\Models\File;
 use App\Models\Project;
-use App\Models\Role;
-use App\Models\RoleTeam;
 use App\Models\StatusTeam;
 use App\Models\Task;
 use App\Models\Team;
@@ -19,7 +16,7 @@ class AssignAttributes
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response) $next
      */
     public function handle(Request $request, Closure $next): Response
     {

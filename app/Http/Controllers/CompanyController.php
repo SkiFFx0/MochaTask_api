@@ -11,6 +11,22 @@ use Illuminate\Support\Facades\DB;
 
 class CompanyController extends Controller
 {
+    public function index()
+    {
+        $companies = Company::all();
+
+        return ApiResponse::success('Companies', [
+            'companies' => $companies,
+        ]);
+    }
+
+    public function show(Company $company)
+    {
+        return ApiResponse::success('Company', [
+            'company' => $company,
+        ]);
+    }
+
     public function store(CompanyRequest $request)
     {
         $validated = $request->validated();

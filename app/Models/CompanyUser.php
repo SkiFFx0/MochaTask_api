@@ -31,15 +31,6 @@ class CompanyUser extends Pivot
         ]);
     }
 
-    protected static function unsetCompanyUserRole($companyId, $userId, $role)
-    {
-        return self::query()
-            ->where('company_id', $companyId)
-            ->where('user_id', $userId)
-            ->where('role', $role)
-            ->delete();
-    }
-
     protected static function unsetCompanyUser($companyId, $userId)
     {
         return self::query()

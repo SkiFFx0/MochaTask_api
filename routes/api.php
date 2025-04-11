@@ -10,20 +10,29 @@ use App\Http\Controllers\StatusController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TeamMemberController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
+Route::get('/users', [UserController::class, 'index']);
+Route::get('/users/{user}', [UserController::class, 'show']);
+
 Route::middleware(['auth:sanctum', 'assign.attributes'])->group(function ()
 {
     Route::post('/logout', [AuthController::class, 'logout']);
+
+    Route::get('/companies', [CompanyController::class, 'index']);
+    Route::get('/companies/{company}', [CompanyController::class, 'show']);
 
     Route::post('/companies/', [CompanyController::class, 'store']);
     Route::get('invitations/accept', [InvitationController::class, 'accept'])->name('invitation.accept');
     Route::middleware('company.member')->group(function ()
     {
-        //TODO add get methods, only to show items, which are inside of company, and other stuff that will not require privileges
+        Route::get('/company-members', [CompanyMemberController::class, 'index']);
+        Route::get('/projects', [ProjectController::class, 'index']);
+        Route::get('/teams', [TeamController::class, 'index']);
 
         Route::middleware('company.privileges')->group(function ()
         {
@@ -33,8 +42,7 @@ Route::middleware(['auth:sanctum', 'assign.attributes'])->group(function ()
             Route::post('invitations/create', [InvitationController::class, 'generateLink']);
             Route::prefix('company-members/{user}')->group(function ()
             {
-                Route::post('/', [CompanyMemberController::class, 'addRole']);
-                Route::delete('/{role}', [CompanyMemberController::class, 'removeRole']);
+                Route::patch('/', [CompanyMemberController::class, 'editRole']);
                 Route::delete('/', [CompanyMemberController::class, 'removeUser']);
             });
 
@@ -51,7 +59,11 @@ Route::middleware(['auth:sanctum', 'assign.attributes'])->group(function ()
 
     Route::middleware('team.member')->group(function ()
     {
-        //TODO add get methods, only to show items, which are inside of team, and other stuff that will not require privileges
+        Route::get('/team-members', [TeamMemberController::class, 'index']);
+        Route::get('/statuses', [StatusController::class, 'index']);
+        Route::get('/tasks', [TaskController::class, 'index']);
+        Route::get('/files', [FileController::class, 'index']);
+
         Route::patch('/task-status/{task}', [TaskController::class, 'changeStatus'])->middleware(['task.ownership', 'status.ownership']);
 
         Route::middleware('team.privileges')->group(function ()
@@ -71,7 +83,6 @@ Route::middleware(['auth:sanctum', 'assign.attributes'])->group(function ()
                 Route::post('/', [StatusController::class, 'store']);
                 Route::delete('/{status}', [StatusController::class, 'destroy']);
             });
-            //TODO add task statuses, and ability for implementor to change it
 
             Route::prefix('tasks')->group(function ()
             {

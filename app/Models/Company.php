@@ -28,4 +28,9 @@ class Company extends Model
     {
         return $this->hasMany(Project::class, 'company_id', 'id');
     }
+
+    public function teams(): HasManyThrough
+    {
+        return $this->hasManyThrough(Team::class, Project::class, 'company_id', 'project_id', 'id');
+    }
 }

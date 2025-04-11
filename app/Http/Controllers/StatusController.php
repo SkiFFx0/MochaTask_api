@@ -6,10 +6,24 @@ use App\Helpers\ApiResponse;
 use App\Http\Requests\Status\StoreRequest;
 use App\Models\Status;
 use App\Models\StatusTeam;
+use App\Models\Team;
 use Illuminate\Http\Request;
 
 class StatusController extends Controller
 {
+    public function index(Request $request)
+    {
+        $teamId = $request->team_id;
+        $team = Team::find($teamId);
+        $teamName = $team->name;
+
+        $teamStatuses = $team->statuses()->get();
+
+        return ApiResponse::success("Statuses inside $teamName team", [
+            'Team statuses' => $teamStatuses
+        ]);
+    }
+
     public function store(StoreRequest $request)
     {
         $validated = $request->validated();

@@ -7,13 +7,27 @@ use App\Http\Requests\Task\StatusChangeRequest;
 use App\Http\Requests\Task\StoreRequest;
 use App\Http\Requests\Task\UpdateRequest;
 use App\Models\Status;
-use App\Models\StatusTeam;
 use App\Models\Task;
+use App\Models\Team;
 use App\Models\TeamUser;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class TaskController extends Controller
 {
+    public function index(Request $request)
+    {
+        $teamId = $request->team_id;
+        $team = Team::find($teamId);
+        $teamName = $team->name;
+
+        $teamTasks = $team->tasks()->get();
+
+        return ApiResponse::success("Tasks inside $teamName team", [
+            'Team Tasks' => $teamTasks
+        ]);
+    }
+
     public function store(StoreRequest $request)
     {
         $validated = $request->validated();

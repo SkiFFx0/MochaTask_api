@@ -19,18 +19,23 @@ class Team extends Model
         'project_id'
     ];
 
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'team_user', 'team_id', 'user_id');
+    }
+
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class, 'project_id', 'id');
     }
 
+    public function statuses(): BelongsToMany
+    {
+        return $this->belongsToMany(Status::class, 'status_team', 'team_id', 'status_id');
+    }
+
     public function tasks(): HasMany
     {
         return $this->hasMany(Task::class, 'team_id', 'id');
-    }
-
-    public function statuses(): BelongsToMany
-    {
-        return $this->belongsToMany(Status::class, 'team_status', 'team_id', 'status_id');
     }
 }
