@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Fail;
 
 use App\Models\Company;
 use App\Models\CompanyUser;
@@ -9,11 +9,11 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\URL;
 use Tests\TestCase;
 
-class InvitationTest extends TestCase
+class InvitationFailTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_InvitationController_invite(): void
+    public function test_InvitationController_accept_link_expired(): void
     {
         $user = User::factory()->create([
             'email' => 'test@test.com',
@@ -30,16 +30,23 @@ class InvitationTest extends TestCase
             'is_privileged' => true,
         ]);
 
-        $response = $this->actingAs($user)
-            ->postJson('/api/invitations/create', [
-                'company_id' => $company->id,
-            ]);
+        $link = URL::temporarySignedRoute(
+            'invitation.accept',
+            now()->subMinute(), // link expired 1 minute ago
+            ['company_id' => $company->id]
+        );
 
-        $response->assertStatus(200);
-        $this->assertNotNull($response->json('data')['link']);
+        $invitee = User::factory()->create([
+            'email' => 'member@test.com',
+        ]);
+
+        $response = $this->actingAs($invitee)
+            ->getJson($link);
+
+        $response->assertStatus(410);
     }
 
-    public function test_InvitationController_accept(): void
+    public function test_InvitationController_accept_already_in_company(): void
     {
         $user = User::factory()->create([
             'email' => 'test@test.com',
@@ -67,13 +74,16 @@ class InvitationTest extends TestCase
             'email' => 'member@test.com',
         ]);
 
+        CompanyUser::factory()->create([
+            'user_id' => $invitee->id,
+            'company_id' => $company->id,
+            'role' => 'member',
+            'is_privileged' => false,
+        ]);
+
         $response = $this->actingAs($invitee)
             ->getJson($link);
 
-        $response->assertStatus(200);
-        $this->assertDatabaseHas('company_user', [
-            'company_id' => $company->id,
-            'user_id' => $invitee->id,
-        ]);
+        $response->assertStatus(409);
     }
 }

@@ -49,8 +49,8 @@ Route::middleware(['auth:sanctum', 'assign.attributes'])->group(function ()
             Route::prefix('projects')->group(function ()
             {
                 Route::post('/', [ProjectController::class, 'store']);
-                Route::patch('/{project}', [ProjectController::class, 'update'])->middleware('project.ownership');
-                Route::delete('/{project}', [ProjectController::class, 'destroy'])->middleware('project.ownership');
+                Route::patch('/{project}', [ProjectController::class, 'update']);//TODO refactoring stopped here, decided to make fail test before continuing
+                Route::delete('/{project}', [ProjectController::class, 'destroy']);
             });
 
             Route::post('/teams', [TeamController::class, 'store'])->middleware('project.ownership');

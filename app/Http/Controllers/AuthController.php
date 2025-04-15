@@ -14,7 +14,7 @@ class AuthController extends Controller
     {
         $validated = $request->validated();
 
-        $user = User::query()->create($validated);
+        $user = User::create($validated);
 
         return ApiResponse::success('User created successfully', [
             'user' => $user
@@ -25,7 +25,7 @@ class AuthController extends Controller
     {
         $validated = $request->validated();
 
-        $user = User::query()->where('email', $validated['email'])->first();
+        $user = User::where('email', $validated['email'])->first();
 
         if (!$user || !Hash::check($validated['password'], $user->password))
         {

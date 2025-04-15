@@ -49,9 +49,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
             if (get_class($e) === ValidationException::class)
             {
-                return ApiResponse::error('Input validation data is not correct', [
-                    'errors' => $e->errors()
-                ], 422);
+                return ApiResponse::error('Input validation data is not correct', null, 422);
             }
 
             if (get_class($e) === NotFoundHttpException::class)

@@ -26,10 +26,8 @@ class EnsureCompanyMember
 
         if (!$userInCompany)
         {
-            return ApiResponse::error('You are not member of this company');
+            return ApiResponse::error('You are not member of this company', null, 403);
         }
-
-        $request->attributes->set('inCompany', true);
 
         return $next($request);
     }

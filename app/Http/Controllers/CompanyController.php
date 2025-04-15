@@ -33,7 +33,7 @@ class CompanyController extends Controller
 
         $company = DB::transaction(function () use ($request, $validated)
         {
-            $company = Company::query()->create($validated);
+            $company = Company::create($validated);
             $companyId = $company->id;
             $userId = auth()->user()->id;
             $role = CompanyRole::OWNER;

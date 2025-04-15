@@ -31,7 +31,7 @@ class InvitationController extends Controller
     {
         if (!$request->hasValidSignature())
         {
-            return ApiResponse::error('Invalid or expired invite link.');
+            return ApiResponse::error('Invalid or expired invite link', null, 410);
         }
 
         $userId = auth()->user()->id;
@@ -43,7 +43,7 @@ class InvitationController extends Controller
 
         if ($userInCompany)
         {
-            return ApiResponse::error('You are already part of this company.');
+            return ApiResponse::error('You are already part of this company', null, 409);
         }
 
         CompanyUser::setCompanyUserRole($companyId, $userId, CompanyRole::MEMBER);

@@ -7,6 +7,7 @@ use App\Http\Requests\Project\StoreUpdateRequest;
 use App\Models\Company;
 use App\Models\Project;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ProjectController extends Controller
 {
@@ -28,7 +29,7 @@ class ProjectController extends Controller
         $validated = $request->validated();
 
         $companyId = $request->company_id;
-        $project = Project::query()->create([
+        $project = Project::create([
             'name' => $validated['name'],
             'company_id' => $companyId,
         ]);

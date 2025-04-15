@@ -9,6 +9,7 @@ use App\Models\Company;
 use App\Models\CompanyUser;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CompanyMemberController extends Controller
 {
@@ -35,7 +36,7 @@ class CompanyMemberController extends Controller
 
         if ($loggedInUserId == $userId)
         {
-            return ApiResponse::error('You can\'t edit your own role');
+            return ApiResponse::error('You can\'t edit your own role', null, 403);
         }
 
         $companyId = $request->company_id;
@@ -46,14 +47,14 @@ class CompanyMemberController extends Controller
 
         if (!$userInCompany)
         {
-            return ApiResponse::error('User is not in the company');
+            return NotFoundHttpException::class;
         }
 
         $role = CompanyRole::from($validated['role']); // Convert string to Enum
 
         if ($role === CompanyRole::OWNER)
         {
-            return ApiResponse::error('You can\'t add "owner" role');
+            return ApiResponse::error('You can\'t add "owner" role', null, 422);
         }
 
         $companyUser = CompanyUser::query()
@@ -62,8 +63,6 @@ class CompanyMemberController extends Controller
             ->first();
 
         $companyUser->update([
-            'company_id' => $companyId,
-            'user_id' => $userId,
             'role' => $role,
             'is_privileged' => $role === CompanyRole::ADMIN,
         ]);
@@ -78,18 +77,21 @@ class CompanyMemberController extends Controller
         $loggedInUserId = auth()->user()->id;
 
         $userId = $user->id;
-        $companyId = $request->company_id;
 
         if ($loggedInUserId == $userId)
         {
-            return ApiResponse::error('You can\'t remove yourself');
+            return ApiResponse::error('You can\'t remove yourself', null, 403);
         }
 
-        $companyIds = $request->attributes->get('company_ids');
+        $companyId = $request->company_id;
 
-        if (!in_array($companyId, $companyIds))
+        $userInCompany = CompanyUser::where('company_id', $companyId)
+            ->where('user_id', $userId)
+            ->first();
+
+        if (!$userInCompany)
         {
-            return ApiResponse::error('This user is not a member of this company');
+            return NotFoundHttpException::class;
         }
 
         $userIsOwner = CompanyUser::query()
@@ -100,7 +102,7 @@ class CompanyMemberController extends Controller
 
         if ($userIsOwner)
         {
-            return ApiResponse::error('You can\'t remove owner');
+            return ApiResponse::error('You can\'t remove owner', null, 422);
         }
 
         CompanyUser::unsetCompanyUser($companyId, $userId);

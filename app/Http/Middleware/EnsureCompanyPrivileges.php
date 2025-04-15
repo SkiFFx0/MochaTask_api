@@ -27,10 +27,8 @@ class EnsureCompanyPrivileges
 
         if (!$userInCompanyPrivileged)
         {
-            return ApiResponse::error('You are not privileged in this company to perform this action');
+            return ApiResponse::error('You are not privileged in this company to perform this action', null, 403);
         }
-
-        $request->attributes->set('company_privileged', true);
 
         return $next($request);
     }
