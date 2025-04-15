@@ -26,7 +26,7 @@ Route::middleware(['auth:sanctum', 'assign.attributes'])->group(function ()
     Route::get('/companies', [CompanyController::class, 'index']);
     Route::get('/companies/{company}', [CompanyController::class, 'show']);
 
-    Route::post('/companies/', [CompanyController::class, 'store']);
+    Route::post('/companies', [CompanyController::class, 'store']);
     Route::get('invitations/accept', [InvitationController::class, 'accept'])->name('invitation.accept');
     Route::middleware('company.member')->group(function ()
     {
@@ -39,7 +39,7 @@ Route::middleware(['auth:sanctum', 'assign.attributes'])->group(function ()
             Route::patch('/companies/{company}', [CompanyController::class, 'update']);
             Route::delete('/companies/{company}', [CompanyController::class, 'destroy']);
 
-            Route::post('invitations/create', [InvitationController::class, 'generateLink']);
+            Route::post('invitations/create', [InvitationController::class, 'invite']);
             Route::prefix('company-members/{user}')->group(function ()
             {
                 Route::patch('/', [CompanyMemberController::class, 'editRole']);

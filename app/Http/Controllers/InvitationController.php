@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\URL;
 
 class InvitationController extends Controller
 {
-    public function generateLink(Request $request)
+    public function invite(Request $request)
     {
         $companyId = $request->company_id;
 
@@ -37,9 +37,11 @@ class InvitationController extends Controller
         $userId = auth()->user()->id;
         $companyId = $request->company_id;
 
-        $companyIds = $request->attributes->get('company_ids');
+        $userInCompany = CompanyUser::where('company_id', $companyId)
+            ->where('user_id', $userId)
+            ->first();
 
-        if (in_array($companyId, $companyIds))
+        if ($userInCompany)
         {
             return ApiResponse::error('You are already part of this company.');
         }

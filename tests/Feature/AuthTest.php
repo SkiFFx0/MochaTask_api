@@ -10,10 +10,7 @@ class AuthTest extends TestCase
 {
     use RefreshDatabase;
 
-    /**
-     * A basic feature test example.
-     */
-    public function test_auth_controller_registration(): void
+    public function test_AuthController_register(): void
     {
         $response = $this->postJson('/api/register', [
             'first_name' => 'Test',
@@ -29,9 +26,9 @@ class AuthTest extends TestCase
         ]);
     }
 
-    public function test_auth_controller_login(): void
+    public function test_AuthController_login(): void
     {
-        User::factory(1)->create([
+        $user = User::factory()->create([
             'email' => 'test@test.com',
         ]);
 
@@ -41,22 +38,28 @@ class AuthTest extends TestCase
         ]);
 
         $response->assertStatus(200);
+        $this->assertDatabaseHas('personal_access_tokens', [
+            'tokenable_id' => $user->id,
+        ]);
     }
 
-    public function test_auth_controller_logout(): void
+    public function test_AuthController_logout(): void
     {
-        User::factory(1)->create([
+        $user = User::factory()->create([
             'email' => 'test@test.com',
         ]);
 
-        $token = $this->postJson('/api/login', [
+        $this->postJson('/api/login', [
             'email' => 'test@test.com',
             'password' => 'password',
-        ])->json('data')['token'];
+        ]);
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+        $response = $this->actingAs($user)
             ->postJson('/api/logout');
 
         $response->assertStatus(200);
+        $this->assertDatabaseMissing('personal_access_tokens', [
+            'tokenable_id' => $user->id,
+        ]);
     }
 }

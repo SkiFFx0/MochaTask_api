@@ -58,7 +58,7 @@ class TaskController extends Controller
                 'user_id' => $validated['user_id'],
             ]);
 
-            $attachment = null;
+            $attachments = [];
 
             if ($request->hasFile('files'))
             {
@@ -68,7 +68,7 @@ class TaskController extends Controller
                     $name = $file->getClientOriginalName();
                     $size = $file->getSize();
 
-                    $attachment = $task->files()->create([
+                    $attachments[] = $task->files()->create([
                         'name' => $name,
                         'size' => $size,
                         'path' => $path,
@@ -76,15 +76,15 @@ class TaskController extends Controller
                 }
             }
 
-            return (object)[
+            return [
                 'task' => $task,
-                'attachment' => $attachment
+                'attachments' => $attachments
             ];
         });
 
         return ApiResponse::success('Task created successfully', [
-            'task' => $query->task,
-            'attachment' => $query->attachment,
+            'task' => $query['task'],
+            'attachments' => $query['attachments'],
         ]);
     }
 
@@ -108,7 +108,7 @@ class TaskController extends Controller
         {
             $task->update($validated);
 
-            $attachment = null;
+            $attachments = [];
 
             if ($request->hasFile('files'))
             {
@@ -118,7 +118,7 @@ class TaskController extends Controller
                     $name = $file->getClientOriginalName();
                     $size = $file->getSize();
 
-                    $attachment = $task->files()->create([
+                    $attachments[] = $task->files()->create([
                         'name' => $name,
                         'size' => $size,
                         'path' => $path,
@@ -126,15 +126,15 @@ class TaskController extends Controller
                 }
             }
 
-            return (object)[
+            return [
                 'task' => $task,
-                'attachment' => $attachment
+                'attachments' => $attachments
             ];
         });
 
         return ApiResponse::success('Task updated successfully', [
-            'task' => $query->task,
-            'attachment' => $query->attachment,
+            'task' => $query['task'],
+            'attachment' => $query['attachments'],
         ]);
     }
 

@@ -17,20 +17,19 @@ class EnsureCompanyMember
      */
     public function handle(Request $request, Closure $next): Response
     {
+        $userId = auth()->user()->id;
         $companyId = $request->company === null ? $request->company_id : $request->company->id;
-        $companyIds = $request->attributes->get('company_ids');
 
-        if (!in_array($companyId, $companyIds))
+        $userInCompany = CompanyUser::where('company_id', $companyId)
+            ->where('user_id', $userId)
+            ->first();
+
+        if (!$userInCompany)
         {
             return ApiResponse::error('You are not member of this company');
         }
 
-        $companyPrivilegedIds = $request->attributes->get('company_privileged_ids');
-
-        if (in_array($companyId, $companyPrivilegedIds))
-        {
-            $request->attributes->set('company_privileged', true);
-        }
+        $request->attributes->set('inCompany', true);
 
         return $next($request);
     }

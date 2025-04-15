@@ -39,9 +39,12 @@ class CompanyMemberController extends Controller
         }
 
         $companyId = $request->company_id;
-        $companyIds = $request->attributes->get('company_ids');
 
-        if (!in_array($companyId, $companyIds))
+        $userInCompany = CompanyUser::where('company_id', $companyId)
+            ->where('user_id', $userId)
+            ->first();
+
+        if (!$userInCompany)
         {
             return ApiResponse::error('User is not in the company');
         }

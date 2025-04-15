@@ -19,7 +19,7 @@ class AssignAttributes
      * @param \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response) $next
      */
     public function handle(Request $request, Closure $next): Response
-    {
+    {//TODO bad implementation, delete this middleware and refactor whole project
         $user = auth()->user();
 
         $companyId = $request->company === null ? $request->company_id : $request->company->id;
