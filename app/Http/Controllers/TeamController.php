@@ -5,18 +5,17 @@ namespace App\Http\Controllers;
 use App\Helpers\ApiResponse;
 use App\Http\Requests\Team\TeamRequest;
 use App\Models\Company;
+use App\Models\Project;
 use App\Models\StatusTeam;
 use App\Models\Team;
 use App\Models\TeamUser;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class TeamController extends Controller
 {
-    public function index(Request $request)
+    public function index(Company $company)
     {
-        $companyId = $request->company_id;
-        $company = Company::find($companyId);
         $companyName = $company->name;
 
         $companyTeams = $company->teams()->get();
@@ -26,23 +25,21 @@ class TeamController extends Controller
         ]);
     }
 
-    public function store(TeamRequest $request)
+    public function store(TeamRequest $request, Project $project)
     {
         $validated = $request->validated();
 
-        $team = DB::transaction(function () use ($request, $validated)
+        $team = DB::transaction(function () use ($request, $project, $validated)
         {
             $userId = auth()->user()->id;
-            $projectId = $request->project_id;
 
             $team = Team::query()->create([
                 'name' => $validated['name'],
-                'project_id' => $projectId,
+                'project_id' => $project->id,
             ]);
-            $teamId = $team->id;
 
-            TeamUser::setTeamUserRole($teamId, $userId, 'admin', true);
-            StatusTeam::assignDefaultStatuses($teamId);
+            TeamUser::setTeamUserRole($team->id, $userId, 'admin', true);
+            StatusTeam::assignDefaultStatuses($team->id);
 
             return $team;
         });

@@ -32,7 +32,6 @@ return Application::configure(basePath: dirname(__DIR__))
             'company.privileges' => EnsureCompanyPrivileges::class,
             'team.member' => EnsureTeamMember::class,
             'team.privileges' => EnsureTeamPrivileges::class,
-            'project.ownership' => EnsureProjectOwnership::class,
             'status.ownership' => EnsureStatusOwnership::class,
             'task.ownership' => EnsureTaskOwnership::class,
             'file.ownership' => EnsureFileOwnership::class,

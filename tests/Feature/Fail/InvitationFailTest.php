@@ -15,20 +15,7 @@ class InvitationFailTest extends TestCase
 
     public function test_InvitationController_accept_link_expired(): void
     {
-        $user = User::factory()->create([
-            'email' => 'test@test.com',
-        ]);
-
-        $company = Company::factory()->create([
-            'name' => 'Test Company',
-        ]);
-
-        CompanyUser::factory()->create([
-            'user_id' => $user->id,
-            'company_id' => $company->id,
-            'role' => 'owner',
-            'is_privileged' => true,
-        ]);
+        $company = Company::factory()->create();
 
         $link = URL::temporarySignedRoute(
             'invitation.accept',
@@ -36,9 +23,7 @@ class InvitationFailTest extends TestCase
             ['company_id' => $company->id]
         );
 
-        $invitee = User::factory()->create([
-            'email' => 'member@test.com',
-        ]);
+        $invitee = User::factory()->create();
 
         $response = $this->actingAs($invitee)
             ->getJson($link);
@@ -48,20 +33,7 @@ class InvitationFailTest extends TestCase
 
     public function test_InvitationController_accept_already_in_company(): void
     {
-        $user = User::factory()->create([
-            'email' => 'test@test.com',
-        ]);
-
-        $company = Company::factory()->create([
-            'name' => 'Test Company',
-        ]);
-
-        CompanyUser::factory()->create([
-            'user_id' => $user->id,
-            'company_id' => $company->id,
-            'role' => 'owner',
-            'is_privileged' => true,
-        ]);
+        $company = Company::factory()->create();
 
         $link = URL::temporarySignedRoute(
             'invitation.accept',
@@ -70,9 +42,7 @@ class InvitationFailTest extends TestCase
             ]
         );
 
-        $invitee = User::factory()->create([
-            'email' => 'member@test.com',
-        ]);
+        $invitee = User::factory()->create();
 
         CompanyUser::factory()->create([
             'user_id' => $invitee->id,

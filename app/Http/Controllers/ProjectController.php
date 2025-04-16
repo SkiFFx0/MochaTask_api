@@ -7,14 +7,11 @@ use App\Http\Requests\Project\StoreUpdateRequest;
 use App\Models\Company;
 use App\Models\Project;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ProjectController extends Controller
 {
-    public function index(Request $request)
+    public function index(Company $company)
     {
-        $companyId = $request->company_id;
-        $company = Company::find($companyId);
         $companyName = $company->name;
 
         $companyProjects = $company->projects()->get();
@@ -24,15 +21,13 @@ class ProjectController extends Controller
         ]);
     }
 
-    public function store(StoreUpdateRequest $request)
+    public function store(StoreUpdateRequest $request, Company $company)
     {
         $validated = $request->validated();
 
-        $companyId = $request->company_id;
         $project = Project::create([
             'name' => $validated['name'],
-            'company_id' => $companyId,
-        ]);
+            'company_id' => $company->id]);
 
         return ApiResponse::success('Project created successfully', [
             'project' => $project

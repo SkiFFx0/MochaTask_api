@@ -13,10 +13,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CompanyMemberController extends Controller
 {
-    public function index(Request $request)
+    public function index(Company $company)
     {
-        $companyId = $request->company_id;
-        $company = Company::find($companyId);
         $companyName = $company->name;
 
         $companyMembers = $company->users()->get();
@@ -26,7 +24,7 @@ class CompanyMemberController extends Controller
         ]);
     }
 
-    public function editRole(EditRequest $request, User $user)
+    public function editRole(EditRequest $request, Company $company, User $user)
     {
         $validated = $request->validated();
 
@@ -39,9 +37,7 @@ class CompanyMemberController extends Controller
             return ApiResponse::error('You can\'t edit your own role', null, 403);
         }
 
-        $companyId = $request->company_id;
-
-        $userInCompany = CompanyUser::where('company_id', $companyId)
+        $userInCompany = CompanyUser::where('company_id', $company->id)
             ->where('user_id', $userId)
             ->first();
 
@@ -58,7 +54,7 @@ class CompanyMemberController extends Controller
         }
 
         $companyUser = CompanyUser::query()
-            ->where('company_id', $companyId)
+            ->where('company_id', $company->id)
             ->where('user_id', $userId)
             ->first();
 
@@ -72,7 +68,7 @@ class CompanyMemberController extends Controller
         ]);
     }
 
-    public function removeUser(Request $request, User $user)
+    public function removeUser(Company $company, User $user)
     {
         $loggedInUserId = auth()->user()->id;
 
@@ -83,9 +79,7 @@ class CompanyMemberController extends Controller
             return ApiResponse::error('You can\'t remove yourself', null, 403);
         }
 
-        $companyId = $request->company_id;
-
-        $userInCompany = CompanyUser::where('company_id', $companyId)
+        $userInCompany = CompanyUser::where('company_id', $company->id)
             ->where('user_id', $userId)
             ->first();
 
@@ -95,7 +89,7 @@ class CompanyMemberController extends Controller
         }
 
         $userIsOwner = CompanyUser::query()
-            ->where('company_id', $companyId)
+            ->where('company_id', $company->id)
             ->where('user_id', $userId)
             ->where('role', CompanyRole::OWNER)
             ->exists();
@@ -105,7 +99,7 @@ class CompanyMemberController extends Controller
             return ApiResponse::error('You can\'t remove owner', null, 422);
         }
 
-        CompanyUser::unsetCompanyUser($companyId, $userId);
+        CompanyUser::unsetCompanyUser($company->id, $userId);
 
         return ApiResponse::success('User deleted successfully');
     }

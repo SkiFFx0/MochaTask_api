@@ -22,7 +22,8 @@ class Team extends Model
 
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'team_user', 'team_id', 'user_id');
+        return $this->belongsToMany(User::class, 'team_user', 'team_id', 'user_id')
+            ->withTimestamps();
     }
 
     public function project(): BelongsTo
@@ -32,7 +33,8 @@ class Team extends Model
 
     public function statuses(): BelongsToMany
     {
-        return $this->belongsToMany(Status::class, 'status_team', 'team_id', 'status_id');
+        return $this->belongsToMany(Status::class, 'status_team', 'team_id', 'status_id')
+            ->withTimestamps();
     }
 
     public function tasks(): HasMany

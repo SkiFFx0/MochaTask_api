@@ -11,14 +11,12 @@ use Illuminate\Support\Facades\URL;
 
 class InvitationController extends Controller
 {
-    public function invite(Request $request)
+    public function invite(Company $company)
     {
-        $companyId = $request->company_id;
-
         $link = URL::temporarySignedRoute(
             'invitation.accept',
             now()->addHour(), [
-                'company_id' => $companyId,
+                'company_id' => $company->id,
             ]
         );
 

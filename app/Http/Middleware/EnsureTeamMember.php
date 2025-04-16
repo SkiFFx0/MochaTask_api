@@ -3,7 +3,8 @@
 namespace App\Http\Middleware;
 
 use App\Helpers\ApiResponse;
-use App\Models\Team;
+use App\Models\CompanyUser;
+use App\Models\TeamUser;
 use Closure;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
@@ -16,34 +17,35 @@ class EnsureTeamMember
     /**
      * Handle an incoming request.
      *
-     * @param \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response) $next
+     * @param Closure(Request): (Response) $next
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $companyId = $request->company_id;
-        $teamId = $request->team === null ? $request->team_id : $request->team->id;
+        $userId = auth()->user()->id;
+        $companyId = $request->attributes->get('company_id');
 
-        $teamAccessIds = $request->attributes->get('team_access_ids');
+        $userInCompanyPrivileged = CompanyUser::where('company_id', $companyId)
+            ->where('user_id', $userId)
+            ->privileged()
+            ->first();
 
-        if (!in_array($teamId, $teamAccessIds))
+        if (!$userInCompanyPrivileged)
         {
-            $companyPrivilegedIds = $request->attributes->get('company_privileged_ids');
-            $team = Team::find($teamId);
+            $teamId = $request->attributes->get('team_id');
 
-            if (!in_array($companyId, $companyPrivilegedIds) || !$team)
+            $userInTeam = TeamUser::where('team_id', $teamId)
+                ->where('user_id', $userId)
+                ->first();
+
+            if ($userInTeam)
             {
-                return ApiResponse::error('You are not member of this team');
+                return $next($request);
             }
 
-            $request->attributes->set('company_privileged', true);
+            return ApiResponse::error('You are not privileged in this company', null, 403);
         }
 
-        $teamPrivilegedIds = $request->attributes->get('team_privileged_ids');
-
-        if (in_array($teamId, $teamPrivilegedIds))
-        {
-            $request->attributes->set('team_privileged', true);
-        }
+        $request->attributes->set('user_in_company_privileged', true);
 
         return $next($request);
     }

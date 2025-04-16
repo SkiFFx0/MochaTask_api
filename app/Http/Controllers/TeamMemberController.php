@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ApiResponse;
 use App\Http\Requests\TeamMember\RoleRequest;
+use App\Models\CompanyUser;
 use App\Models\Project;
 use App\Models\Team;
 use App\Models\TeamUser;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class TeamMemberController extends Controller
 {
@@ -35,24 +37,27 @@ class TeamMemberController extends Controller
 
         if ($loggedInUserId == $userId)
         {
-            return ApiResponse::error('You can\'t add yourself as a team member');
+            return ApiResponse::error('You can\'t add yourself as a team member', null, 403);
         }
 
         $companyId = $request->company_id;
-        $companyIds = $user->companies()->distinct()->pluck('company_id')->toArray();
+        $userInCompany = CompanyUser::where('company_id', $companyId)
+            ->where('user_id', $userId)
+            ->first();
 
-        if (!in_array($companyId, $companyIds))
+        if (!$userInCompany)
         {
-            return ApiResponse::error('User is not in the company');
+            return NotFoundHttpException::class;
         }
 
-        $projectIds = Project::whereIn('company_id', $companyIds)->pluck('id')->toArray();
         $teamId = $request->team_id;
-        $teamIds = $user->teams()->whereIn('project_id', $projectIds)->distinct()->pluck('team_id')->toArray();
+        $userInTeam = TeamUser::where('team_id', $teamId)
+            ->where('user_id', $userId)
+            ->first();
 
-        if (in_array($teamId, $teamIds))
+        if ($userInTeam)
         {
-            return ApiResponse::error('This user is already a member of this team');
+            return ApiResponse::error('This user is already a member of this team', null, 409);
         }
 
         TeamUser::setTeamUserRole($teamId, $userId, $validated['role'], $validated['is_privileged']);

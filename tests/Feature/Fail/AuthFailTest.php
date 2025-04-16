@@ -12,9 +12,7 @@ class AuthFailTest extends TestCase
 
     public function test_AuthController_login_wrong_credentials(): void
     {
-        User::factory()->create([
-            'email' => 'test@test.com',
-        ]);
+        User::factory()->create();
 
         $response = $this->postJson('/api/login', [
             'email' => 'test@test.com',

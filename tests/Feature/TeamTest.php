@@ -17,125 +17,83 @@ class TeamTest extends TestCase
 
     public function test_TeamController_store(): void
     {
-        $user = User::factory()->create([
-            'email' => 'test@test.com',
-        ]);
+        $user = User::factory()->create();
 
-        $company = Company::factory()->create([
-            'name' => 'Test Company',
-        ]);
+        Company::factory()->create();
 
         CompanyUser::factory()->create([
-            'user_id' => $user->id,
-            'company_id' => $company->id,
             'role' => 'owner',
             'is_privileged' => true,
         ]);
 
-        $project = Project::factory()->create([
-            'company_id' => $company->id,
-            'name' => 'Test Project',
-        ]);
+        $project = Project::factory()->create();
 
         $response = $this->actingAs($user)
-            ->postJson("/api/teams/", [
-                'company_id' => $company->id,
-                'project_id' => $project->id,
-                'name' => 'Test Project',
+            ->postJson("/api/projects/$project->id/team/", [
+                'name' => 'Test Team',
             ]);
 
         $response->assertStatus(200);
         $this->assertDatabaseHas('teams', [
-            'name' => 'Test Project',
+            'name' => 'Test Team',
         ]);
     }
 
     public function test_TeamController_update(): void
     {
-        $user = User::factory()->create([
-            'email' => 'test@test.com',
-        ]);
+        $user = User::factory()->create();
 
-        $company = Company::factory()->create([
-            'name' => 'Test Company',
-        ]);
+        Company::factory()->create();
 
         CompanyUser::factory()->create([
-            'user_id' => $user->id,
-            'company_id' => $company->id,
             'role' => 'owner',
             'is_privileged' => true,
         ]);
 
-        $project = Project::factory()->create([
-            'company_id' => $company->id,
-            'name' => 'Test Project',
-        ]);
+        Project::factory()->create();
 
-        $team = Team::factory()->create([
-            'name' => 'Test Team',
-            'project_id' => $project->id,
-        ]);
+        $team = Team::factory()->create();
 
         TeamUser::factory()->create([
-            'team_id' => $team->id,
-            'user_id' => $user->id,
             'role' => 'admin',
             'is_privileged' => true,
         ]);
 
         $response = $this->actingAs($user)
             ->patchJson("/api/teams/$team->id", [
-                'company_id' => $company->id,
-                'project_id' => $project->id,
-                'name' => 'Test Project updated',
+                'name' => 'Test Team updated',
             ]);
 
         $response->assertStatus(200);
         $this->assertDatabaseHas('teams', [
-            'name' => 'Test Project updated',
+            'name' => 'Test Team updated',
         ]);
     }
 
     public function test_TeamController_destroy(): void
     {
-        $user = User::factory()->create([
-            'email' => 'test@test.com',
-        ]);
+        $user = User::factory()->create();
 
-        $company = Company::factory()->create([
-            'name' => 'Test Company',
-        ]);
+        Company::factory()->create();
 
         CompanyUser::factory()->create([
-            'user_id' => $user->id,
-            'company_id' => $company->id,
             'role' => 'owner',
             'is_privileged' => true,
         ]);
 
-        $project = Project::factory()->create([
-            'company_id' => $company->id,
-            'name' => 'Test Project',
-        ]);
+        Project::factory()->create();
 
         $team = Team::factory()->create([
             'name' => 'Test Team',
-            'project_id' => $project->id,
         ]);
 
         TeamUser::factory()->create([
-            'team_id' => $team->id,
-            'user_id' => $user->id,
             'role' => 'admin',
             'is_privileged' => true,
         ]);
 
         $response = $this->actingAs($user)
-            ->deleteJson("/api/teams/$team->id", [
-                'company_id' => $company->id,
-                'project_id' => $project->id,
-            ]);
+            ->deleteJson("/api/teams/$team->id");
 
         $response->assertStatus(200);
         $this->assertDatabaseMissing('teams', [

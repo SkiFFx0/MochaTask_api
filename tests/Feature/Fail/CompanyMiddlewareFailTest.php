@@ -6,22 +6,17 @@ use App\Models\Company;
 use App\Models\CompanyUser;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class CompanyMiddlewareFailTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_CompanyController_destroy_not_in_company(): void
+    public function test_CompanyMiddleware_not_in_company(): void
     {
-        $user = User::factory()->create([
-            'email' => 'test@test.com',
-        ]);
+        $user = User::factory()->create();
 
-        $company = Company::factory()->create([
-            'name' => 'Test Company',
-        ]);
+        $company = Company::factory()->create();
 
         $response = $this->actingAs($user)
             ->deleteJson("/api/companies/$company->id");
@@ -29,19 +24,13 @@ class CompanyMiddlewareFailTest extends TestCase
         $response->assertStatus(403);
     }
 
-    public function test_CompanyController_destroy_not_privileged(): void
+    public function test_CompanyMiddleware_not_privileged(): void
     {
-        $user = User::factory()->create([
-            'email' => 'test@test.com',
-        ]);
+        $user = User::factory()->create();
 
-        $company = Company::factory()->create([
-            'name' => 'Test Company',
-        ]);
+        $company = Company::factory()->create();
 
         CompanyUser::factory()->create([
-            'company_id' => $company->id,
-            'user_id' => $user->id,
             'role' => 'owner',
             'is_privileged' => false,
         ]);

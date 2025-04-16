@@ -13,15 +13,29 @@ class EnsureTeamPrivileges
     /**
      * Handle an incoming request.
      *
-     * @param \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response) $next
+     * @param Closure(Request): (Response) $next
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $pass = $request->attributes->get('company_privileged', false) || $request->attributes->get('team_privileged', false);
+        $userId = auth()->user()->id;
 
-        if (!$pass)
+        $userInCompanyPrivileged = $request->attributes->get('user_in_company_privileged', false);
+
+        if (!$userInCompanyPrivileged)
         {
-            return ApiResponse::error('You are not privileged in this team to perform this action');
+            $teamId = $request->attributes->get('team_id');
+
+            $userInTeamPrivileged = TeamUser::where('team_id', $teamId)
+                ->where('user_id', $userId)
+                ->privileged()
+                ->first();
+
+            if ($userInTeamPrivileged)
+            {
+                return $next($request);
+            }
+
+            return ApiResponse::error('You are not privileged in this company', null, 403);
         }
 
         return $next($request);

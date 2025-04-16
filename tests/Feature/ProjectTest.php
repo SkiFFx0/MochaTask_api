@@ -15,24 +15,17 @@ class ProjectTest extends TestCase
 
     public function test_ProjectController_store(): void
     {
-        $user = User::factory()->create([
-            'email' => 'test@test.com',
-        ]);
+        $user = User::factory()->create();
 
-        $company = Company::factory()->create([
-            'name' => 'Test Company',
-        ]);
+        $company = Company::factory()->create();
 
         CompanyUser::factory()->create([
-            'user_id' => $user->id,
-            'company_id' => $company->id,
             'role' => 'owner',
             'is_privileged' => true,
         ]);
 
         $response = $this->actingAs($user)
-            ->postJson('/api/projects', [
-                'company_id' => $company->id,
+            ->postJson("/api/companies/$company->id/project", [
                 'name' => 'Test Project',
             ]);
 
@@ -44,29 +37,19 @@ class ProjectTest extends TestCase
 
     public function test_ProjectController_update(): void
     {
-        $user = User::factory()->create([
-            'email' => 'test@test.com',
-        ]);
+        $user = User::factory()->create();
 
-        $company = Company::factory()->create([
-            'name' => 'Test Company',
-        ]);
+        $company = Company::factory()->create();
 
         CompanyUser::factory()->create([
-            'user_id' => $user->id,
-            'company_id' => $company->id,
             'role' => 'owner',
             'is_privileged' => true,
         ]);
 
-        $project = Project::factory()->create([
-            'company_id' => $company->id,
-            'name' => 'Test Project',
-        ]);
+        $project = Project::factory()->create();
 
         $response = $this->actingAs($user)
             ->patchJson("/api/projects/$project->id", [
-                'company_id' => $company->id,
                 'name' => 'Test Project updated',
             ]);
 
@@ -78,30 +61,21 @@ class ProjectTest extends TestCase
 
     public function test_ProjectController_destroy(): void
     {
-        $user = User::factory()->create([
-            'email' => 'test@test.com',
-        ]);
+        $user = User::factory()->create();
 
-        $company = Company::factory()->create([
-            'name' => 'Test Company',
-        ]);
+        $company = Company::factory()->create();
 
         CompanyUser::factory()->create([
-            'user_id' => $user->id,
-            'company_id' => $company->id,
             'role' => 'owner',
             'is_privileged' => true,
         ]);
 
         $project = Project::factory()->create([
-            'company_id' => $company->id,
             'name' => 'Test Project',
         ]);
 
         $response = $this->actingAs($user)
-            ->deleteJson("/api/projects/$project->id", [
-                'company_id' => $company->id,
-            ]);
+            ->deleteJson("/api/projects/$project->id");
 
         $response->assertStatus(200);
         $this->assertDatabaseMissing('projects', [

@@ -26,34 +26,38 @@ Route::middleware(['auth:sanctum', 'assign.attributes'])->group(function ()
     Route::get('/companies', [CompanyController::class, 'index']);
     Route::get('/companies/{company}', [CompanyController::class, 'show']);
 
-    Route::post('/companies', [CompanyController::class, 'store']);
     Route::get('invitations/accept', [InvitationController::class, 'accept'])->name('invitation.accept');
+
+    Route::post('/companies', [CompanyController::class, 'store']);
+
     Route::middleware('company.member')->group(function ()
     {
-        Route::get('/company-members', [CompanyMemberController::class, 'index']);
-        Route::get('/projects', [ProjectController::class, 'index']);
-        Route::get('/teams', [TeamController::class, 'index']);
+        Route::get('/company-members/{company}', [CompanyMemberController::class, 'index']);
+        Route::get('/projects/{company}', [ProjectController::class, 'index']);
+        Route::get('/teams/{company}', [TeamController::class, 'index']);
 
         Route::middleware('company.privileges')->group(function ()
         {
-            Route::patch('/companies/{company}', [CompanyController::class, 'update']);
-            Route::delete('/companies/{company}', [CompanyController::class, 'destroy']);
+            Route::post('invitations/create/{company}', [InvitationController::class, 'invite']);
 
-            Route::post('invitations/create', [InvitationController::class, 'invite']);
-            Route::prefix('company-members/{user}')->group(function ()
+            Route::prefix('companies/{company}')->group(function () //TODO
             {
-                Route::patch('/', [CompanyMemberController::class, 'editRole']);
-                Route::delete('/', [CompanyMemberController::class, 'removeUser']);
+                Route::patch('/', [CompanyController::class, 'update']);
+                Route::delete('/', [CompanyController::class, 'destroy']);
+
+                Route::patch('/members/{user}', [CompanyMemberController::class, 'editRole']);
+                Route::delete('/members/{user}', [CompanyMemberController::class, 'removeUser']);
+
+                Route::post('/project', [ProjectController::class, 'store']);
             });
 
-            Route::prefix('projects')->group(function ()
+            Route::prefix('projects/{project}')->group(function ()
             {
-                Route::post('/', [ProjectController::class, 'store']);
-                Route::patch('/{project}', [ProjectController::class, 'update']);//TODO refactoring stopped here, decided to make fail test before continuing
-                Route::delete('/{project}', [ProjectController::class, 'destroy']);
-            });
+                Route::patch('/', [ProjectController::class, 'update']);
+                Route::delete('/', [ProjectController::class, 'destroy']);
 
-            Route::post('/teams', [TeamController::class, 'store'])->middleware('project.ownership');
+                Route::post('/team', [TeamController::class, 'store']);
+            });
         });
     });
 

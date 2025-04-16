@@ -14,35 +14,26 @@ class CompanyMemberTest extends TestCase
 
     public function test_CompanyMemberController_editRole(): void
     {
-        $user = User::factory()->create([
-            'email' => 'test@test.com',
-        ]);
+        $user = User::factory()->create();
 
-        $company = Company::factory()->create([
-            'name' => 'Test Company',
-        ]);
+        $company = Company::factory()->create();
 
         CompanyUser::factory()->create([
-            'user_id' => $user->id,
-            'company_id' => $company->id,
             'role' => 'owner',
             'is_privileged' => true,
         ]);
 
-        $member = User::factory()->create([
-            'email' => 'member@test.com',
-        ]);
+        $member = User::factory()->create();
 
         CompanyUser::factory()->create([
-            'user_id' => $member->id,
             'company_id' => $company->id,
+            'user_id' => $member->id,
             'role' => 'member',
             'is_privileged' => false,
         ]);
 
         $response = $this->actingAs($user)
-            ->patchJson("/api/company-members/$member->id", [
-                'company_id' => $company->id,
+            ->patchJson("/api/companies/$company->id/members/$member->id", [
                 'role' => 'admin',
             ]);
 
@@ -57,36 +48,26 @@ class CompanyMemberTest extends TestCase
 
     public function test_CompanyMemberController_removeUser(): void
     {
-        $user = User::factory()->create([
-            'email' => 'test@test.com',
-        ]);
+        $user = User::factory()->create();
 
-        $company = Company::factory()->create([
-            'name' => 'Test Company',
-        ]);
+        $company = Company::factory()->create();
 
         CompanyUser::factory()->create([
-            'user_id' => $user->id,
-            'company_id' => $company->id,
             'role' => 'owner',
             'is_privileged' => true,
         ]);
 
-        $member = User::factory()->create([
-            'email' => 'member@test.com',
-        ]);
+        $member = User::factory()->create();
 
         CompanyUser::factory()->create([
-            'user_id' => $member->id,
             'company_id' => $company->id,
+            'user_id' => $member->id,
             'role' => 'member',
             'is_privileged' => false,
         ]);
 
         $response = $this->actingAs($user)
-            ->deleteJson("/api/company-members/$member->id", [
-                'company_id' => $company->id,
-            ]);
+            ->deleteJson("/api/companies/$company->id/members/$member->id");
 
         $response->assertStatus(200);
         $this->assertDatabaseMissing('company_user', [

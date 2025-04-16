@@ -19,7 +19,8 @@ class Status extends Model
 
     public function teams(): BelongsToMany
     {
-        return $this->belongsToMany(Team::class, 'team_status', 'status_id', 'team_id');
+        return $this->belongsToMany(Team::class, 'team_status', 'status_id', 'team_id')
+            ->withTimestamps();
     }
 
     public function tasks(): HasMany

@@ -15,25 +15,17 @@ class InvitationTest extends TestCase
 
     public function test_InvitationController_invite(): void
     {
-        $user = User::factory()->create([
-            'email' => 'test@test.com',
-        ]);
+        $user = User::factory()->create();
 
-        $company = Company::factory()->create([
-            'name' => 'Test Company',
-        ]);
+        $company = Company::factory()->create();
 
         CompanyUser::factory()->create([
-            'user_id' => $user->id,
-            'company_id' => $company->id,
             'role' => 'owner',
             'is_privileged' => true,
         ]);
 
         $response = $this->actingAs($user)
-            ->postJson('/api/invitations/create', [
-                'company_id' => $company->id,
-            ]);
+            ->postJson("/api/invitations/create/$company->id");
 
         $response->assertStatus(200);
         $this->assertNotNull($response->json('data')['link']);
@@ -41,20 +33,7 @@ class InvitationTest extends TestCase
 
     public function test_InvitationController_accept(): void
     {
-        $user = User::factory()->create([
-            'email' => 'test@test.com',
-        ]);
-
-        $company = Company::factory()->create([
-            'name' => 'Test Company',
-        ]);
-
-        CompanyUser::factory()->create([
-            'user_id' => $user->id,
-            'company_id' => $company->id,
-            'role' => 'owner',
-            'is_privileged' => true,
-        ]);
+        $company = Company::factory()->create();
 
         $link = URL::temporarySignedRoute(
             'invitation.accept',
@@ -63,9 +42,7 @@ class InvitationTest extends TestCase
             ]
         );
 
-        $invitee = User::factory()->create([
-            'email' => 'member@test.com',
-        ]);
+        $invitee = User::factory()->create();
 
         $response = $this->actingAs($invitee)
             ->getJson($link);

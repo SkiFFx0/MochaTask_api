@@ -3,7 +3,12 @@
 namespace App\Http\Middleware;
 
 use App\Helpers\ApiResponse;
+use App\Models\Company;
 use App\Models\CompanyUser;
+use App\Models\File;
+use App\Models\Project;
+use App\Models\Task;
+use App\Models\Team;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,7 +23,7 @@ class EnsureCompanyPrivileges
     public function handle(Request $request, Closure $next): Response
     {
         $userId = auth()->user()->id;
-        $companyId = $request->company === null ? $request->company_id : $request->company->id;
+        $companyId = $request->attributes->get('company_id');
 
         $userInCompanyPrivileged = CompanyUser::where('company_id', $companyId)
             ->where('user_id', $userId)
@@ -27,7 +32,7 @@ class EnsureCompanyPrivileges
 
         if (!$userInCompanyPrivileged)
         {
-            return ApiResponse::error('You are not privileged in this company to perform this action', null, 403);
+            return ApiResponse::error('You are not privileged in this company', null, 403);
         }
 
         return $next($request);

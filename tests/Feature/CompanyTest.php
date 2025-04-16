@@ -12,11 +12,31 @@ class CompanyTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_CompanyController_index(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/companies');
+
+        $response->assertStatus(200);
+    }
+
+    public function test_CompanyController_show(): void
+    {
+        $user = User::factory()->create();
+
+        $company = Company::factory()->create();
+
+        $response = $this->actingAs($user)
+            ->getJson("/api/companies/$company->id");
+
+        $response->assertStatus(200);
+    }
+
     public function test_CompanyController_store(): void
     {
-        $user = User::factory()->create([
-            'email' => 'test@test.com',
-        ]);
+        $user = User::factory()->create();
 
         $response = $this->actingAs($user)
             ->postJson('/api/companies', [
@@ -31,17 +51,11 @@ class CompanyTest extends TestCase
 
     public function test_CompanyController_update(): void
     {
-        $user = User::factory()->create([
-            'email' => 'test@test.com',
-        ]);
+        $user = User::factory()->create();
 
-        $company = Company::factory()->create([
-            'name' => 'Test Company',
-        ]);
+        $company = Company::factory()->create();
 
         CompanyUser::factory()->create([
-            'company_id' => $company->id,
-            'user_id' => $user->id,
             'role' => 'owner',
             'is_privileged' => true,
         ]);
@@ -59,17 +73,13 @@ class CompanyTest extends TestCase
 
     public function test_CompanyController_destroy(): void
     {
-        $user = User::factory()->create([
-            'email' => 'test@test.com',
-        ]);
+        $user = User::factory()->create();
 
         $company = Company::factory()->create([
             'name' => 'Test Company',
         ]);
 
         CompanyUser::factory()->create([
-            'company_id' => $company->id,
-            'user_id' => $user->id,
             'role' => 'owner',
             'is_privileged' => true,
         ]);
